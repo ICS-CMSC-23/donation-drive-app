@@ -164,33 +164,31 @@ class _SignUpPageState extends State<SignUpPage> {
                   username,
                   password,
                   for (var i = 0; i < addressesController.length; i++)
-                    TextFormField(
-                      controller: addressesController[i],
-                      decoration: InputDecoration(
-                        labelText: 'Address ${i + 1}',
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              addressesController.add(TextEditingController());
-                            });
-                          },
-                          child: const Icon(Icons.add),
+                    Row(children: [
+                      Expanded(
+                          child: TextFormField(
+                        controller: addressesController[i],
+                        decoration: InputDecoration(
+                          labelText: 'Address ${i + 1}',
+                          border: const OutlineInputBorder(),
                         ),
-                        ElevatedButton(
+                      )),
+                      IconButton(
+                          icon: const Icon(Icons.remove),
                           onPressed: () {
                             setState(() {
-                              addressesController.removeLast();
+                              addressesController.removeAt(i);
                             });
-                          },
-                          child: const Icon(Icons.remove),
-                        )
-                      ]),
+                          })
+                    ]),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        addressesController.add(TextEditingController());
+                      });
+                    },
+                    child: const Icon(Icons.add),
+                  ),
                   signUpButton,
                   backButton
                 ],
@@ -404,15 +402,13 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
                           border: const OutlineInputBorder(),
                         ),
                       )),
-                      Expanded(
-                          child: ElevatedButton(
-                            style:
-                              onPressed: () {
-                                setState(() {
-                                  addressesController.removeAt(i);
-                                });
-                              },
-                              child: const Icon(Icons.remove)))
+                      IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: () {
+                            setState(() {
+                              addressesController.removeAt(i);
+                            });
+                          })
                     ]),
                   ElevatedButton(
                     onPressed: () {
@@ -420,7 +416,7 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
                         addressesController.add(TextEditingController());
                       });
                     },
-                    child: const Icon(Icons.add),
+                    child: const Text("Add address"),
                   ),
                   orgName,
                   orgProof,
