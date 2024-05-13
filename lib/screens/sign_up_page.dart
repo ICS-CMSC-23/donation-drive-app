@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:provider/provider.dart';
+import '../provider/auth_provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -72,9 +74,6 @@ class _SignUpPageState extends State<SignUpPage> {
           if (value == null || value.isEmpty) {
             return 'Username is required';
           }
-          if (!EmailValidator.validate(value)) {
-            return 'Invalid username';
-          }
           return null;
         });
 
@@ -111,6 +110,9 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
+            await context
+                .read<MyAuthProvider>()
+                .signUp(emailController.text, passwordController.text);
             if (context.mounted) Navigator.pop(context);
           }
         },
@@ -341,7 +343,12 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
           ),
         ),
         onPressed: () async {
-          if (_formKey.currentState!.validate()) {}
+          if (_formKey.currentState!.validate()) {
+            await context
+                .read<MyAuthProvider>()
+                .signUp(emailController.text, passwordController.text);
+            if (context.mounted) Navigator.pop(context);
+          }
         },
         child: const Text('Sign up', style: TextStyle(color: Colors.white)),
       ),

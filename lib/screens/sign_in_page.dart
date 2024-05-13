@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import '../provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -53,7 +55,12 @@ class _SignInPageState extends State<SignInPage> {
         style: const ButtonStyle(
             backgroundColor: MaterialStatePropertyAll<Color>(
                 Color.fromARGB(255, 38, 32, 69))),
-        onPressed: () {},
+        onPressed: () async {
+          await context.read<MyAuthProvider>().signIn(
+                emailController.text.trim(),
+                passwordController.text.trim(),
+              );
+        },
         child: const Text('Log In', style: TextStyle(color: Colors.white)),
       ),
     );
