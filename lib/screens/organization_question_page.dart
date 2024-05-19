@@ -47,12 +47,17 @@ class OrganizationQuestionPage extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            elevation: 5,
                             backgroundColor:
                                 const Color.fromRGBO(255, 63, 64, 1),
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 16),
+                            side: const BorderSide(
+                                color: Color.fromRGBO(255, 63, 64, 1),
+                                width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(36.0),
+                            ),
                           ),
                           onPressed: () {
                             Navigator.pushReplacementNamed(
@@ -63,12 +68,17 @@ class OrganizationQuestionPage extends StatelessWidget {
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            elevation: 5,
                             backgroundColor: Colors.white,
                             foregroundColor:
                                 const Color.fromRGBO(255, 63, 64, 1),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 16),
+                            side: const BorderSide(
+                                color: Color.fromRGBO(255, 63, 64, 1),
+                                width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(36.0),
+                            ),
                           ),
                           onPressed: () {
                             Navigator.pushReplacementNamed(context, '/signup');
