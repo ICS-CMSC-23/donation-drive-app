@@ -109,12 +109,19 @@ class _SignInPageState extends State<SignInPage> {
     // );
 
     return Scaffold(
-        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
-        resizeToAvoidBottomInset: true,
-        body: SingleChildScrollView(
-          child: Center(
+      backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Center(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            alignment: Alignment.center,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Card(
                   margin:
@@ -124,7 +131,8 @@ class _SignInPageState extends State<SignInPage> {
                     child: Form(
                       key: _formKey,
                       child: ListView(
-                        shrinkWrap: true,
+                        shrinkWrap:
+                            true, // Make ListView only occupy needed space
                         children: <Widget>[
                           const Text(
                             "Welcome!",
@@ -137,11 +145,10 @@ class _SignInPageState extends State<SignInPage> {
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 16),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
                           email,
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
                           password,
-                          const SizedBox(height: 20),
                           loginButton,
                         ],
                       ),
@@ -150,7 +157,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/signup');
+                    Navigator.of(context).pushNamed('/orgquestion');
                   },
                   child: RichText(
                     text: const TextSpan(
@@ -171,6 +178,8 @@ class _SignInPageState extends State<SignInPage> {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
