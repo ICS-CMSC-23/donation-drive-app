@@ -21,7 +21,11 @@ class _SignInPageState extends State<SignInPage> {
       key: const Key('emailField'),
       controller: emailController,
       decoration: const InputDecoration(
-          labelText: "Email", border: OutlineInputBorder()),
+        labelText: "Email",
+        border: OutlineInputBorder(),
+        suffixIcon: Icon(Icons.email),
+        errorStyle: TextStyle(color: Colors.redAccent),
+      ),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Email address is required';
@@ -37,7 +41,11 @@ class _SignInPageState extends State<SignInPage> {
       controller: passwordController,
       obscureText: true,
       decoration: const InputDecoration(
-          labelText: 'Password', border: OutlineInputBorder()),
+        labelText: 'Password',
+        border: OutlineInputBorder(),
+        suffixIcon: Icon(Icons.lock),
+        errorStyle: TextStyle(color: Colors.redAccent),
+      ),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Password is required';
@@ -52,62 +60,114 @@ class _SignInPageState extends State<SignInPage> {
       key: const Key('loginButton'),
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: ElevatedButton(
-        style: const ButtonStyle(
-            backgroundColor: MaterialStatePropertyAll<Color>(
-                Color.fromARGB(255, 38, 32, 69))),
-        onPressed: () async {
-          await context.read<MyAuthProvider>().signIn(
-                emailController.text.trim(),
-                passwordController.text.trim(),
-              );
+        style: ButtonStyle(
+          backgroundColor: const MaterialStatePropertyAll<Color>(
+              Color.fromRGBO(255, 63, 64, 1)),
+          padding: MaterialStateProperty.all<EdgeInsets>(
+              const EdgeInsets.symmetric(vertical: 16)), //button height
+        ),
+        onPressed: () {
+          // Check if the form is valid
+          if (_formKey.currentState!.validate()) {
+            // If the form is valid, proceed with signing in
+            context.read<MyAuthProvider>().signIn(
+                  emailController.text.trim(),
+                  passwordController.text.trim(),
+                );
+          }
+          // If the form is not valid, the validator messages will appear
         },
-        child: const Text('Log In', style: TextStyle(color: Colors.white)),
+        child: const Text('LOGIN',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.white)),
       ),
     );
 
-    final signUpButton = Padding(
-      key: const Key('signUpButton'),
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor: const MaterialStatePropertyAll<Color>(Colors.white),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18.0),
-              side: const BorderSide(
-                  color: Color.fromARGB(255, 38, 32, 69), width: 2.0),
-            ),
-          ),
-        ),
-        onPressed: () async {
-          Navigator.of(context).pushNamed('/orgquestion');
-        },
-        child: const Text('Sign Up',
-            style: TextStyle(color: Color.fromARGB(255, 38, 32, 69))),
-      ),
-    );
+    //unused
+    // final signUpButton = Padding(
+    //   key: const Key('signUpButton'),
+    //   padding: const EdgeInsets.symmetric(vertical: 16.0),
+    //   child: ElevatedButton(
+    //     style: ButtonStyle(
+    //       backgroundColor: const MaterialStatePropertyAll<Color>(Colors.white),
+    //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    //         RoundedRectangleBorder(
+    //           borderRadius: BorderRadius.circular(18.0),
+    //           side: const BorderSide(
+    //               color: Color.fromARGB(255, 38, 32, 69), width: 2.0),
+    //         ),
+    //       ),
+    //     ),
+    //     onPressed: () async {
+    //       Navigator.of(context).pushNamed('/orgquestion');
+    //     },
+    //     child: const Text('Sign Up',
+    //         style: TextStyle(color: Color.fromARGB(255, 38, 32, 69))),
+    //   ),
+    // );
 
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(20),
+        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Text(
-                  "Sign in",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Form(
+                      key: _formKey,
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: <Widget>[
+                          const Text(
+                            "Welcome!",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          const Text(
+                            "Login to continue",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 20),
+                          email,
+                          const SizedBox(height: 20),
+                          password,
+                          const SizedBox(height: 20),
+                          loginButton,
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 20),
-                email,
-                const SizedBox(height: 20),
-                password,
-                const SizedBox(height: 20),
-                loginButton,
-                signUpButton,
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/signup');
+                  },
+                  child: RichText(
+                    text: const TextSpan(
+                      text: 'New user? ',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Sign Up',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(255, 63, 64, 1)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
