@@ -1,9 +1,7 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
-import 'package:my_app/screen/ApproveOrg.dart';
-import 'package:my_app/screen/ViewAllDonors.dart';
-import 'package:my_app/screen/ViewAllOrgs.dart';
+import 'ApproveOrg.dart';
+import 'ViewAllDonors.dart';
+import 'ViewAllOrgs.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({super.key});
