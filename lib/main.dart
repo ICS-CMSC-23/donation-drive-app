@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Todo with Auth',
-      initialRoute: '/orghomepage',
+      initialRoute: '/signup',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

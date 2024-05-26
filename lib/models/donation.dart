@@ -10,31 +10,33 @@ class Donation {
   final DateTime dateTime;
   final List<String> addresses; // Can save multiple addresses
   final String contactNo;
+  final int
+      status; // 0 Pending, 1 Confirmed, 2 Scheduled for pick-up, 3 Complete, 4 Canceled
 
-  Donation({
-    required this.organizationId,
-    this.id,
-    required this.categories,
-    required this.isPickup,
-    required this.weight,
-    this.photoUrl,
-    required this.dateTime,
-    required this.addresses,
-    required this.contactNo,
-  });
+  Donation(
+      {required this.organizationId,
+      this.id,
+      required this.categories,
+      required this.isPickup,
+      required this.weight,
+      this.photoUrl,
+      required this.dateTime,
+      required this.addresses,
+      required this.contactNo,
+      required this.status});
 
   factory Donation.fromJson(Map<String, dynamic> json) {
     return Donation(
-      organizationId: json['organizationId'],
-      id: json['id'],
-      categories: List<String>.from(json['categories']),
-      isPickup: json['isPickup'],
-      weight: json['weight'],
-      photoUrl: json['photoUrl'],
-      dateTime: DateTime.parse(json['dateTime']),
-      addresses: List<String>.from(json['addresses']),
-      contactNo: json['contactNo'],
-    );
+        organizationId: json['organizationId'],
+        id: json['id'],
+        categories: List<String>.from(json['categories']),
+        isPickup: json['isPickup'],
+        weight: json['weight'],
+        photoUrl: json['photoUrl'],
+        dateTime: DateTime.parse(json['dateTime']),
+        addresses: List<String>.from(json['addresses']),
+        contactNo: json['contactNo'],
+        status: json['status']);
   }
 
   static List<Donation> fromJsonArray(String jsonData) {
@@ -53,6 +55,7 @@ class Donation {
       'dateTime': dateTime.toIso8601String(),
       'addresses': addresses,
       'contactNo': contactNo,
+      'status': status
     };
   }
 }
