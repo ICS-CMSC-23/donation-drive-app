@@ -20,14 +20,16 @@ class MyAuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signUp(String email, String password) async {
-    await authService.signUp(email, password);
+  Future<String?> signUp(String email, String password) async {
+    String? result = await authService.signUp(email, password);
     notifyListeners();
+    return result;
   }
 
-  Future<void> signIn(String email, String password) async {
-    await authService.signIn(email, password);
+  Future<String?> signIn(String email, String password) async {
+    String? result = await authService.signIn(email, password);
     notifyListeners();
+    return result;
   }
 
   Future<void> signOut() async {

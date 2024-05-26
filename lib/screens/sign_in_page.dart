@@ -56,10 +56,25 @@ class _SignInPageState extends State<SignInPage> {
             backgroundColor: MaterialStatePropertyAll<Color>(
                 Color.fromARGB(255, 38, 32, 69))),
         onPressed: () async {
-          await context.read<MyAuthProvider>().signIn(
-                emailController.text.trim(),
-                passwordController.text.trim(),
-              );
+          if (_formKey.currentState!.validate()) {
+            String? result = await context.read<MyAuthProvider>().signIn(
+                  emailController.text.trim(),
+                  passwordController.text.trim(),
+                );
+
+            // ignore: use_build_context_synchronously
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                if (result != null) {
+                  return AlertDialog(content: Text(result));
+                } else {
+                  return const AlertDialog(
+                      content: Text('Something went wrong.'));
+                }
+              },
+            );
+          }
         },
         child: const Text('Log In', style: TextStyle(color: Colors.white)),
       ),
