@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'screens/sign_in_page.dart';
 import 'screens/sign_up_page.dart';
 import 'screens/organization_question_page.dart';
+import 'screens/organization/ViewAllDonors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'provider/auth_provider.dart';
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Todo with Auth',
-      initialRoute: '/signin',
+      initialRoute: '/viewalldonors',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignUpPage(),
         '/orgsignup': (context) => const OrganizationSignUpPage(),
         '/orgquestion': (context) => const OrganizationQuestionPage(),
+        '/viewalldonors': (context) => const ViewAllDonors()
       },
     );
   }

@@ -314,19 +314,8 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
       },
     );
 
-    final orgProof = TextFormField(
-      controller: orgProofController,
-      decoration: const InputDecoration(
-        labelText: 'Proof of Legitimacy',
-        border: OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Proof of legitimacy is required';
-        }
-        return null;
-      },
-    );
+    final orgProof =
+        IconButton(icon: const Icon(Icons.camera_alt), onPressed: () {});
 
     final signUpButton = Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
