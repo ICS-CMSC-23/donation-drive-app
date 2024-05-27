@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/donor_provider.dart';
+import '../models/donor_model.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -113,6 +115,24 @@ class _SignUpPageState extends State<SignUpPage> {
             await context
                 .read<MyAuthProvider>()
                 .signUp(emailController.text, passwordController.text);
+
+            // Get the current donor count
+            int donorCount =
+                await context.read<DonorListProvider>().getDonorCount();
+
+            // Create a new donor with userId as the current donor count
+            context.read<DonorListProvider>().addDonor(
+                  Donor(
+                    userId: donorCount,
+                    name:
+                        '${firstNameController.text} ${lastNameController.text}',
+                    username: usernameController.text,
+                    password: passwordController.text,
+                    addresses: addressesController.map((c) => c.text).toList(),
+                    contactNo: contactNoController.text,
+                  ),
+                );
+
             if (context.mounted) Navigator.pop(context);
           }
         },

@@ -43,7 +43,6 @@ class DonationDrive {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'organizationId': organizationId,
       'name': name,
       'description': description,

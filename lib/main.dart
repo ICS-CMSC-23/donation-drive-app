@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Todo with Auth',
-      initialRoute: '/donorpage',
+      initialRoute: '/signup',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
