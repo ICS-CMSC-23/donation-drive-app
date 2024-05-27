@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import '../provider/auth_provider.dart';
+import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
