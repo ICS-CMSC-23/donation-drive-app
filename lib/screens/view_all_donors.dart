@@ -12,19 +12,17 @@ class ViewAllDonors extends StatelessWidget {
         title: const Text(
           "View All Donors",
           style: TextStyle(
-            fontWeight: FontWeight.bold, // Bold text style
-            color: Colors.white, // White text color for visibility
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.transparent, // Transparent AppBar background
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const SizedBox(), // Ensures title aligns to the left
       ),
-      body: SingleChildScrollView(
-        child: Padding(
+      body: Center(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildDonorSection(
                 context,
@@ -61,8 +59,9 @@ class ViewAllDonors extends StatelessWidget {
       String address, String contact, List<Widget> donations) {
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
+      child: Container(
+        width: MediaQuery.of(context).size.width *
+            0.8, // Fixed width to 80% of screen width
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,6 +78,7 @@ class ViewAllDonors extends StatelessWidget {
               "Address: $address",
               style: const TextStyle(
                 fontSize: 16,
+                fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
             ),
@@ -86,6 +86,7 @@ class ViewAllDonors extends StatelessWidget {
               "Contact Number: $contact",
               style: const TextStyle(
                 fontSize: 16,
+                fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
             ),
