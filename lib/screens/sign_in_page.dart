@@ -72,18 +72,25 @@ class _SignInPageState extends State<SignInPage> {
                   passwordController.text.trim(),
                 );
 
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                if (result != null) {
-                  return AlertDialog(content: Text(result));
-                } else {
-                  return const AlertDialog(
-                    content: Text('Something went wrong.'),
-                  );
-                }
-              },
-            );
+            if (result == 'donor') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DonorPage()),
+              );
+            } else if (result == 'organization') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OrganizationPage()),
+              );
+            } else {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                      content: Text(result ?? 'Something went wrong.'));
+                },
+              );
+            }
           }
         },
         child: const Text('Log In', style: TextStyle(color: Colors.white)),

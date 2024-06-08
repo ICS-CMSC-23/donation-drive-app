@@ -11,6 +11,7 @@ class MyAuthProvider with ChangeNotifier {
   MyAuthProvider() {
     authService = FirebaseAuthAPI();
     fetchAuthentication();
+    listenToAuthChanges();
   }
 
   Stream<User?> get userStream => uStream;
@@ -18,6 +19,13 @@ class MyAuthProvider with ChangeNotifier {
   void fetchAuthentication() {
     uStream = authService.getUser();
     notifyListeners();
+  }
+
+  void listenToAuthChanges() {
+    uStream.listen((user) {
+      userObj = user;
+      notifyListeners();
+    });
   }
 
   Future<String?> signUp(String email, String password) async {
@@ -30,13 +38,15 @@ class MyAuthProvider with ChangeNotifier {
     String? result = await authService.signIn(email, password);
     print(result);
     if (result == "Sign in successful") {
+      userObj = FirebaseAuth.instance.currentUser;
+
       bool isDonor = await checkIfDonor(email);
       bool isOrganization = await checkIfOrganization(email);
 
       if (isDonor) {
-        result = "Signed-in a donor";
+        result = "donor";
       } else if (isOrganization) {
-        result = "Signed-in an organization";
+        result = "organization";
       } else {
         result = "User type unknown";
       }
