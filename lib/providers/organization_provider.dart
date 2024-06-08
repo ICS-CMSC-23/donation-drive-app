@@ -10,14 +10,14 @@ class OrganizationListProvider with ChangeNotifier {
 
   OrganizationListProvider() {
     firebaseService = FirebaseOrganizationAPI();
-    fetchDonors();
+    fetchOrganizations();
   }
 
   Stream<QuerySnapshot> get organizations => _organizationStream;
 
   int get organizationCount => _organizationCount;
 
-  fetchDonors() {
+  fetchOrganizations() {
     _organizationStream = firebaseService.getAllOrganizations();
     _organizationStream.listen((snapshot) {
       _organizationCount = snapshot.docs.length;

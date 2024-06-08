@@ -17,7 +17,6 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
 
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   List<TextEditingController> addressesController = [TextEditingController()];
@@ -123,7 +122,7 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
           if (_formKey.currentState!.validate()) {
             await context
                 .read<MyAuthProvider>()
-                .signUp(emailController.text, passwordController.text);
+                .signUp(usernameController.text, passwordController.text);
 
             int organizationCount = await context
                 .read<OrganizationListProvider>()

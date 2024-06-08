@@ -12,7 +12,7 @@ import 'providers/donor_provider.dart';
 import 'providers/organization_provider.dart';
 import 'providers/donation_provider.dart';
 import 'providers/donation_drive_provider.dart';
-import 'screens/test/donor_page.dart';
+import 'screens/donor/donor_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         '/orgsignup': (context) => const OrganizationSignUpPage(),
         '/orgquestion': (context) => const OrganizationQuestionPage(),
         '/orghomepage': (context) => const OrganizationHomepage(),
-        '/donorpage': (context) => const DonorPage()
+        '/donorpage': (context) => const DonorPage(),
       },
     );
   }
