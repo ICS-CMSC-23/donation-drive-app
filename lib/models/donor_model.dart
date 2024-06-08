@@ -39,7 +39,6 @@ class Donor {
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
-      'id': id,
       'name': name,
       'username': username,
       'password': password,

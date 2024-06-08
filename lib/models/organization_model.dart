@@ -8,10 +8,10 @@ class Organization {
   final String password;
   final List<String> addresses;
   final String contactNo;
-  final String orgName;
+  final String organizationName;
   final List<String> proofsOfLegitimacy;
   final bool isApproved; // True for approved, False for disapproved
-  final String about;
+  final String? about;
   final bool isOpen; // True for open, False for close
   final List<String> donationDriveIds;
 
@@ -23,11 +23,11 @@ class Organization {
       required this.password,
       required this.addresses,
       required this.contactNo,
-      required this.orgName,
+      required this.organizationName,
       required this.proofsOfLegitimacy,
       this.isApproved = false,
-      required this.about,
-      required this.isOpen,
+      this.about,
+      this.isOpen = true,
       this.donationDriveIds = const []});
 
   factory Organization.fromJson(Map<String, dynamic> json) {
@@ -39,7 +39,7 @@ class Organization {
         password: json['password'],
         addresses: List<String>.from(json['addresses']),
         contactNo: json['contactNo'],
-        orgName: json['orgName'],
+        organizationName: json['organizationName'],
         proofsOfLegitimacy: List<String>.from(json['proofsOfLegitimacy']),
         isApproved: json['isApproved'],
         about: json['about'],
@@ -57,13 +57,12 @@ class Organization {
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
-      'id': id,
       'name': name,
       'username': username,
       'password': password,
       'addresses': addresses,
       'contactNo': contactNo,
-      'orgName': orgName,
+      'organizationName': organizationName,
       'proofsOfLegitimacy': proofsOfLegitimacy,
       'isApproved': isApproved,
       'about': about,

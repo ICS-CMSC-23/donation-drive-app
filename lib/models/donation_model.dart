@@ -47,7 +47,6 @@ class Donation {
   Map<String, dynamic> toJson() {
     return {
       'organizationId': organizationId,
-      'id': id,
       'categories': categories,
       'isPickup': isPickup,
       'weight': weight,

@@ -2,21 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/sign_in_page.dart';
 import 'screens/sign_up_page.dart';
+import 'screens/organization_sign_up_page.dart';
 import 'screens/organization_question_page.dart';
 import 'screens/organization/organization_homepage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'provider/auth_provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/donor_provider.dart';
+import 'providers/organization_provider.dart';
+import 'providers/donation_provider.dart';
+import 'providers/donation_drive_provider.dart';
+import 'screens/test/donor_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: ((context) => MyAuthProvider())),
+        ChangeNotifierProvider(create: ((context) => DonorListProvider())),
+        ChangeNotifierProvider(
+            create: ((context) => OrganizationListProvider())),
+        ChangeNotifierProvider(create: ((context) => DonationListProvider())),
+        ChangeNotifierProvider(
+            create: ((context) => DonationDriveListProvider()))
       ],
       child: const MyApp(),
     ),
@@ -30,7 +43,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Todo with Auth',
-      initialRoute: '/signup',
+      initialRoute: '/signin',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -39,7 +52,8 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignUpPage(),
         '/orgsignup': (context) => const OrganizationSignUpPage(),
         '/orgquestion': (context) => const OrganizationQuestionPage(),
-        '/orghomepage': (context) => const OrganizationHomepage()
+        '/orghomepage': (context) => const OrganizationHomepage(),
+        '/donorpage': (context) => const DonorPage()
       },
     );
   }

@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/donor_provider.dart';
-import '../models/donor_model.dart';
+import '../providers/organization_provider.dart';
+import '../models/organization_model.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+class OrganizationSignUpPage extends StatefulWidget {
+  const OrganizationSignUpPage({Key? key}) : super(key: key);
+
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  State<OrganizationSignUpPage> createState() => _OrganizationSignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController firstNameController = TextEditingController();
@@ -21,6 +22,10 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController passwordController = TextEditingController();
   List<TextEditingController> addressesController = [TextEditingController()];
   TextEditingController contactNoController = TextEditingController();
+  TextEditingController organizationNameController = TextEditingController();
+  List<TextEditingController> proofsOfLegitimacyController = [
+    TextEditingController()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -50,22 +55,6 @@ class _SignUpPageState extends State<SignUpPage> {
           return null;
         });
 
-    final email = TextFormField(
-        controller: emailController,
-        decoration: const InputDecoration(
-          labelText: "Email",
-          border: OutlineInputBorder(),
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Email address is required';
-          }
-          if (!EmailValidator.validate(value)) {
-            return 'Invalid email address';
-          }
-          return null;
-        });
-
     final username = TextFormField(
         controller: usernameController,
         decoration: const InputDecoration(
@@ -75,6 +64,9 @@ class _SignUpPageState extends State<SignUpPage> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Username is required';
+          }
+          if (!EmailValidator.validate(value)) {
+            return 'Invalid username';
           }
           return null;
         });
@@ -96,6 +88,23 @@ class _SignUpPageState extends State<SignUpPage> {
           return null;
         });
 
+    final organizationName = TextFormField(
+      controller: organizationNameController,
+      decoration: const InputDecoration(
+        labelText: 'Name of Organization',
+        border: OutlineInputBorder(),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Organization name is required';
+        }
+        return null;
+      },
+    );
+
+    final proofsOfLegitimacy =
+        IconButton(icon: const Icon(Icons.camera_alt), onPressed: () {});
+
     final signUpButton = Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: ElevatedButton(
@@ -116,23 +125,24 @@ class _SignUpPageState extends State<SignUpPage> {
                 .read<MyAuthProvider>()
                 .signUp(emailController.text, passwordController.text);
 
-            // Get the current donor count
-            int donorCount =
-                await context.read<DonorListProvider>().getDonorCount();
+            int organizationCount = await context
+                .read<OrganizationListProvider>()
+                .getOrganizationCount();
 
-            // Create a new donor with userId as the current donor count
-            context.read<DonorListProvider>().addDonor(
-                  Donor(
-                    userId: donorCount,
-                    name:
-                        '${firstNameController.text} ${lastNameController.text}',
-                    username: usernameController.text,
-                    password: passwordController.text,
-                    addresses: addressesController.map((c) => c.text).toList(),
-                    contactNo: contactNoController.text,
-                  ),
-                );
-
+            context
+                .read<OrganizationListProvider>()
+                .addOrganization(Organization(
+                  userId: organizationCount,
+                  name:
+                      '${firstNameController.text} ${lastNameController.text}',
+                  username: usernameController.text,
+                  password: passwordController.text,
+                  addresses: addressesController.map((c) => c.text).toList(),
+                  contactNo: contactNoController.text,
+                  organizationName: organizationNameController.text,
+                  proofsOfLegitimacy:
+                      proofsOfLegitimacyController.map((c) => c.text).toList(),
+                ));
             if (context.mounted) Navigator.pop(context);
           }
         },
@@ -164,7 +174,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Sign Up",
+          "Organization Sign Up",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 25),
         ),
@@ -182,7 +192,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 children: [
                   firstName,
                   lastName,
-                  email,
                   username,
                   password,
                   for (var i = 0; i < addressesController.length; i++)
@@ -209,10 +218,38 @@ class _SignUpPageState extends State<SignUpPage> {
                         addressesController.add(TextEditingController());
                       });
                     },
+                    child: const Text("Add address"),
+                  ),
+                  organizationName,
+                  for (var i = 0; i < proofsOfLegitimacyController.length; i++)
+                    Row(children: [
+                      Expanded(
+                          child: TextFormField(
+                        controller: proofsOfLegitimacyController[i],
+                        decoration: InputDecoration(
+                          labelText: 'Proof ${i + 1}',
+                          border: const OutlineInputBorder(),
+                        ),
+                      )),
+                      IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: () {
+                            setState(() {
+                              proofsOfLegitimacyController.removeAt(i);
+                            });
+                          })
+                    ]),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        proofsOfLegitimacyController
+                            .add(TextEditingController());
+                      });
+                    },
                     child: const Icon(Icons.add),
                   ),
                   signUpButton,
-                  backButton
+                  backButton,
                 ],
               ),
             ),
