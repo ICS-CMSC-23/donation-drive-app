@@ -1,10 +1,11 @@
-// ignore_for_file: library_private_types_in_public_api
-
+// ignore: file_names
 import 'package:flutter/material.dart';
 import 'DonorProfile.dart';
+import 'DonateForm.dart';
+import '../sign_in_page.dart'; // Assuming this is the sign-up page file
 
 class DonorPage extends StatefulWidget {
-  const DonorPage({super.key});
+  const DonorPage({Key? key}) : super(key: key);
 
   @override
   _DonorPageState createState() => _DonorPageState();
@@ -18,53 +19,91 @@ class _DonorPageState extends State<DonorPage> {
     "Organization 4",
   ];
 
-  void approveOrganization(int index) {
-    // Remove the organization from the list
-    organizations.removeAt(index);
-
-    // Show snackbar message for approval
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Organization chosen"),
-      ),
-    );
-
-    // Update the UI
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Donor Homepage"),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: organizations
-                  .map(
-                    (org) => _buildOrganizationCard(org,
-                        () => approveOrganization(organizations.indexOf(org))),
-                  )
-                  .toList(),
-            ),
+      appBar: AppBar(
+        title: const Text("Donor Homepage"),
+      ),
+      drawer: _buildDrawer(context),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: organizations
+                .map(
+                  (org) => _buildOrganizationCard(org),
+                )
+                .toList(),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.account_circle),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => DonorProfile()),
-            );
-          },
-        ));
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.account_circle),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const DonorProfile()),
+          );
+        },
+      ),
+    );
   }
 
-  Widget _buildOrganizationCard(String name, VoidCallback onApprove) {
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text(
+              'Menu',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('View Profile'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DonorProfile()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.list),
+            title: const Text('View Organizations'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DonorPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Log Out'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SignInPage()),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrganizationCard(String name) {
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -92,7 +131,14 @@ class _DonorPageState extends State<DonorPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
-                  onPressed: onApprove,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DonationFormPage(organizationName: name),
+                      ),
+                    );
+                  },
                   child: const Text("Select this organization"),
                 )
               ],
