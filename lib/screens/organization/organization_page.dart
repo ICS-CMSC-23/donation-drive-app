@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'OrganizationProfile.dart';
+import 'organization_profile.dart';
 
 class OrganizationPage extends StatefulWidget {
   const OrganizationPage({super.key});
@@ -24,22 +24,22 @@ class Donation {
 
 class _OrganizationPageState extends State<OrganizationPage> {
   List<Donation> fetchDonations() {
-  return [
-    Donation(
-      donorName: 'Ayen Nery',
-      categories: ['Food', 'Clothes'],
-      photo: 'null',
-      contactNumber: '+1234567890',
-    ),
-    Donation(
-      donorName: 'Hev Abi',
-      categories: ['Cash'],
-      photo: 'null',
-      contactNumber: '+9876543210',
-    ),
-  ];
-}
-  
+    return [
+      Donation(
+        donorName: 'Ayen Nery',
+        categories: ['Food', 'Clothes'],
+        photo: 'null',
+        contactNumber: '+1234567890',
+      ),
+      Donation(
+        donorName: 'Hev Abi',
+        categories: ['Cash'],
+        photo: 'null',
+        contactNumber: '+9876543210',
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     // Fetch donation data from backend
@@ -81,12 +81,12 @@ class DonationCard extends StatelessWidget {
         ),
         onTap: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => OrganizationProfileScreen()),
+            context,
+            MaterialPageRoute(
+                builder: (context) => OrganizationProfileScreen()),
           );
         },
       ),
     );
   }
 }
-

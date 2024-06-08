@@ -4,7 +4,7 @@ import 'screens/sign_in_page.dart';
 import 'screens/sign_up_page.dart';
 import 'screens/organization_sign_up_page.dart';
 import 'screens/organization_question_page.dart';
-import 'screens/organization/organization_homepage.dart';
+import 'screens/organization/organization_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignUpPage(),
         '/orgsignup': (context) => const OrganizationSignUpPage(),
         '/orgquestion': (context) => const OrganizationQuestionPage(),
-        '/orghomepage': (context) => const OrganizationHomepage(),
+        '/orghomepage': (context) => const OrganizationPage(),
         '/donorpage': (context) => const DonorPage(),
       },
     );
