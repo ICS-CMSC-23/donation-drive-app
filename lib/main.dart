@@ -10,6 +10,8 @@ import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
 import 'providers/donor_provider.dart';
 import 'providers/organization_provider.dart';
+import 'providers/donation_provider.dart';
+import 'providers/donation_drive_provider.dart';
 import 'screens/test/donor_page.dart';
 
 void main() async {
@@ -24,7 +26,10 @@ void main() async {
         ChangeNotifierProvider(create: ((context) => MyAuthProvider())),
         ChangeNotifierProvider(create: ((context) => DonorListProvider())),
         ChangeNotifierProvider(
-            create: ((context) => OrganizationListProvider()))
+            create: ((context) => OrganizationListProvider())),
+        ChangeNotifierProvider(create: ((context) => DonationListProvider())),
+        ChangeNotifierProvider(
+            create: ((context) => DonationDriveListProvider()))
       ],
       child: const MyApp(),
     ),
@@ -38,7 +43,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Todo with Auth',
-      initialRoute: '/orgsignup',
+      initialRoute: '/signin',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
