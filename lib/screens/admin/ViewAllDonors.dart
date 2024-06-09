@@ -8,9 +8,18 @@ class ViewAllDonors extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:
+          const Color.fromRGBO(46, 61, 78, 1), // Set dark background color
       appBar: AppBar(
-        title: const Text("View All Donors"),
-        backgroundColor: Colors.blue, // Set your desired color
+        title: const Text(
+          "View All Donors",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white, // Set text color to white
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -38,22 +47,69 @@ class ViewAllDonors extends StatelessWidget {
   }
 
   Widget _buildDonorSection(Donor donor) {
+    return Card(
+      color: Colors.white, // Card background color
+      margin: const EdgeInsets.only(bottom: 20),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              donor.name,
+              style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+            ),
+            const SizedBox(height: 10),
+            _buildTextRow('User ID:', donor.userId.toString()),
+            const SizedBox(height: 10),
+            _buildTextRow('Username:', donor.username),
+            const SizedBox(height: 10),
+            _buildAddressSection('Address:', donor.addresses),
+            const SizedBox(height: 10),
+            _buildTextRow('Contact No:', donor.contactNo),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextRow(String label, String data) {
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '$label ',
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          TextSpan(
+            text: data,
+            style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.normal),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddressSection(String label, List<String> addresses) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: [
         Text(
-          donor.name,
+          label,
           style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
-        const SizedBox(height: 10),
-        Text("User ID: ${donor.userId}"),
-        Text("Username: ${donor.username}"),
-        ...donor.addresses.map((address) => Text("Address: $address")).toList(),
-        Text("Contact No: ${donor.contactNo}"),
-        const Divider(),
+        ...addresses
+            .map((address) => Text(address,
+                style: const TextStyle(fontSize: 16, color: Colors.black)))
+            .toList(),
       ],
     );
   }
