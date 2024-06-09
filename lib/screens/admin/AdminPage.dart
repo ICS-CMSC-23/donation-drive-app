@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'admin_view_all_donors.dart';
 import 'admin_view_all_orgs.dart';
+import 'admin_view_all_donations.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({super.key});
@@ -82,6 +83,28 @@ class AdminPage extends StatelessWidget {
                     },
                     child: const Text(
                       'View All Donors',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor:
+                          const Color.fromRGBO(255, 63, 64, 1), // Text color
+                      minimumSize: Size(
+                          double.infinity, 50), // Full width and fixed height
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ViewAllDonations()),
+                      );
+                    },
+                    child: const Text(
+                      'View All Donations',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
