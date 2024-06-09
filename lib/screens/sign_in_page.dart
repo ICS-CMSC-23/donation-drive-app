@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:project_jdvillamin/screens/test/donor_page.dart';
 import '../providers/organization_provider.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'donor/donor_page.dart';
 import 'organization/organization_page.dart';
 import '../models/organization_model.dart';
 
@@ -72,10 +72,42 @@ class _SignInPageState extends State<SignInPage> {
         ),
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            await context.read<MyAuthProvider>().signIn(
+            String? result = await context.read<MyAuthProvider>().signIn(
                   emailController.text.trim(),
                   passwordController.text.trim(),
                 );
+            if (result == 'donor') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DonorPage()),
+              );
+            } else if (result == 'organization') {
+              Organization? orgToSign = await context
+                  .read<OrganizationListProvider>()
+                  .getOrganizationByUsername(emailController.text);
+              if (!orgToSign!.isApproved) {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const AlertDialog(
+                          content: Text("Not yet approved"));
+                    });
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const OrganizationPage()),
+                );
+              }
+            } else {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                      content: Text(result ?? 'Something went wrong.'));
+                },
+              );
+            }
           }
         },
         child: const Text('LOGIN',
