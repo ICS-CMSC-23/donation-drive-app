@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +28,31 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
   List<TextEditingController> proofsOfLegitimacyController = [
     TextEditingController()
   ];
+
+  PlatformFile? pickedFile;
+
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result == null) return;
+
+    setState(() {
+      pickedFile = result.files.first;
+    });
+  }
+
+  Future uploadFile() async {
+    if (pickedFile == null) return;
+
+    final path = 'files/${pickedFile!.name}';
+    final file = File(pickedFile!.path!);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+    await ref.putFile(file);
+
+    final fileUrl = await ref.getDownloadURL();
+    return fileUrl;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,9 +129,6 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
       },
     );
 
-    final proofsOfLegitimacy =
-        IconButton(icon: const Icon(Icons.camera_alt), onPressed: () {});
-
     final signUpButton = Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: ElevatedButton(
@@ -128,6 +153,9 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
                 .read<OrganizationListProvider>()
                 .getOrganizationCount();
 
+            // Upload file and get URL
+            final proofUrl = await uploadFile();
+
             context
                 .read<OrganizationListProvider>()
                 .addOrganization(Organization(
@@ -139,8 +167,7 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
                   addresses: addressesController.map((c) => c.text).toList(),
                   contactNo: contactNoController.text,
                   organizationName: organizationNameController.text,
-                  proofsOfLegitimacy:
-                      proofsOfLegitimacyController.map((c) => c.text).toList(),
+                  proofsOfLegitimacy: proofUrl != null ? [proofUrl] : [],
                 ));
             if (context.mounted) Navigator.pop(context);
           }
@@ -222,14 +249,11 @@ class _OrganizationSignUpPageState extends State<OrganizationSignUpPage> {
                   organizationName,
                   for (var i = 0; i < proofsOfLegitimacyController.length; i++)
                     Row(children: [
-                      Expanded(
-                          child: TextFormField(
-                        controller: proofsOfLegitimacyController[i],
-                        decoration: InputDecoration(
-                          labelText: 'Proof ${i + 1}',
-                          border: const OutlineInputBorder(),
-                        ),
-                      )),
+                      ElevatedButton(
+                        onPressed: selectFile,
+                        child: const Text('Select File'),
+                      ),
+                      Text(pickedFile?.name ?? 'No file selected'),
                       IconButton(
                           icon: const Icon(Icons.remove),
                           onPressed: () {
