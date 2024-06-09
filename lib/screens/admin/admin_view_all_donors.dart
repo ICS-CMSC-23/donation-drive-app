@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project_jdvillamin/models/donor_model.dart'; // Ensure you have a Donor model
+import 'package:project_jdvillamin/models/donor_model.dart';
 
 class ViewAllDonors extends StatelessWidget {
   const ViewAllDonors({Key? key}) : super(key: key);
@@ -8,14 +8,13 @@ class ViewAllDonors extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          const Color.fromRGBO(46, 61, 78, 1), // Set dark background color
+      backgroundColor: const Color.fromRGBO(46, 61, 78, 1),
       appBar: AppBar(
         title: const Text(
           "View All Donors",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white, // Set text color to white
+            color: Colors.white,
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -48,7 +47,7 @@ class ViewAllDonors extends StatelessWidget {
 
   Widget _buildDonorSection(Donor donor) {
     return Card(
-      color: Colors.white, // Card background color
+      color: Colors.white,
       margin: const EdgeInsets.only(bottom: 20),
       child: Padding(
         padding: const EdgeInsets.all(16),
