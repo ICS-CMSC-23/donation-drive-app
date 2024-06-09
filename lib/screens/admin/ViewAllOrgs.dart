@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project_jdvillamin/models/organization_model.dart'; // Ensure you import the Organization model correctly
+import 'package:project_jdvillamin/models/organization_model.dart';
 
 class ViewAllOrgs extends StatelessWidget {
   const ViewAllOrgs({Key? key}) : super(key: key);
@@ -103,7 +103,20 @@ class ViewAllOrgs extends StatelessWidget {
     );
   }
 
-  Widget _buildProofsOfLegitimacy(List<String> urls) {
+  Widget _buildProofsOfLegitimacy(List<String>? urls) {
+    if (urls == null || urls.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 8.0),
+        child: Text(
+          'No proofs of legitimacy available',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+          ),
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -113,20 +126,33 @@ class ViewAllOrgs extends StatelessWidget {
               fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         SizedBox(height: 8),
-        urls.isEmpty
-            ? const Text('Not available', style: TextStyle(fontSize: 16))
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: urls
-                      .map((url) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.network(url,
-                                width: 100, height: 100, fit: BoxFit.cover),
-                          ))
-                      .toList(),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: urls.map((url) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.network(
+                  url,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (BuildContext context, Object error,
+                      StackTrace? stackTrace) {
+                    // Return an error icon or a placeholder image
+                    return Container(
+                      width: 100,
+                      height: 100,
+                      color: Colors.grey,
+                      child: const Icon(Icons.error, color: Colors.white),
+                      alignment: Alignment.center,
+                    );
+                  },
                 ),
-              ),
+              );
+            }).toList(),
+          ),
+        ),
       ],
     );
   }
@@ -141,7 +167,16 @@ class ViewAllOrgs extends StatelessWidget {
             .update({'isApproved': !isApproved});
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: isApproved ? Colors.red : Colors.green,
+        backgroundColor: isApproved
+            ? Colors.red
+            : Colors.green, // Lighter green when not approved
+        foregroundColor: Colors.white, // White text color for both
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.bold, // Bold text
+          fontSize: 16, // Larger text size
+        ),
+        padding: const EdgeInsets.symmetric(
+            vertical: 10, horizontal: 20), // Padding for better sizing
       ),
       child: Text(isApproved ? 'Disapprove' : 'Approve'),
     );
