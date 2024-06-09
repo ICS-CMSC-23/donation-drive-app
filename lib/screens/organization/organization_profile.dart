@@ -5,8 +5,10 @@ import '../../providers/organization_provider.dart';
 import '../../models/organization_model.dart';
 
 class OrganizationProfileScreen extends StatefulWidget {
+  const OrganizationProfileScreen({super.key});
+
   @override
-  _OrganizationProfileScreenState createState() =>
+  State<OrganizationProfileScreen> createState() =>
       _OrganizationProfileScreenState();
 }
 
@@ -60,9 +62,9 @@ class _OrganizationProfileScreenState extends State<OrganizationProfileScreen> {
     if (_organization == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Organization Profile'),
+          title: const Text('Organization Profile'),
         ),
-        body: Center(
+        body: const Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -70,14 +72,14 @@ class _OrganizationProfileScreenState extends State<OrganizationProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Organization Profile'),
+        title: const Text('Organization Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Organization Name:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),

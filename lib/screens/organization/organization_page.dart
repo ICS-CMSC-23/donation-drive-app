@@ -5,6 +5,7 @@ import '../../models/donor_model.dart';
 import '../../providers/donation_provider.dart';
 import '../../providers/donor_provider.dart';
 import 'organization_profile.dart';
+import 'organization_donation.dart';
 
 class OrganizationPage extends StatefulWidget {
   const OrganizationPage({super.key});
@@ -73,15 +74,21 @@ class _OrganizationPageState extends State<OrganizationPage> {
                           addresses: [],
                           contactNo: 'Unknown'));
 
-                  return DonationCard(
-                    donorName: donor.name,
-                    categories: donation.categories,
-                    photo: donation.photoUrl ?? 'null',
-                    contactNumber: donor.contactNo,
-                  );
+                  return DonationCard(donor: donor, donation: donation);
                 },
               );
             },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.account_circle),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const OrganizationProfileScreen(),
+            ),
           );
         },
       ),
@@ -90,39 +97,37 @@ class _OrganizationPageState extends State<OrganizationPage> {
 }
 
 class DonationCard extends StatelessWidget {
-  final String donorName;
-  final List<String> categories;
-  final String photo;
-  final String contactNumber;
+  final Donor donor;
+  final Donation donation;
 
-  DonationCard({
-    required this.donorName,
-    required this.categories,
-    required this.photo,
-    required this.contactNumber,
-  });
+  const DonationCard({super.key, required this.donor, required this.donation});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: photo == 'null' ? null : NetworkImage(photo),
-          child: photo == 'null' ? const Icon(Icons.image) : null,
+          backgroundImage: donation.photoUrl == 'null'
+              ? null
+              : NetworkImage(donation.photoUrl ?? ""),
+          child: donation.photoUrl == 'null' ? const Icon(Icons.image) : null,
         ),
-        title: Text(donorName),
+        title: Text(donor.username),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Categories: ${categories.join(', ')}'),
-            Text('Contact: $contactNumber'),
+            Text('Categories: ${donation.categories.join(', ')}'),
+            Text('Contact: $donation.contactNo'),
           ],
         ),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => OrganizationProfileScreen()),
+                builder: (context) => DonationDetailsScreen(
+                      donationDetails:
+                          DonationDetails(donor: donor, donation: donation),
+                    )),
           );
         },
       ),
