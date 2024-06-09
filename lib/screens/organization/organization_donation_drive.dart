@@ -36,7 +36,6 @@ List<DonationDrive> fetchDonationDrives() {
   ];
 }
 
-
 class DonationDrivesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -100,23 +99,16 @@ class DonationDriveItem extends StatelessWidget {
           children: [
             IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () {
-               
-              },
+              onPressed: () {},
             ),
             IconButton(
               icon: Icon(Icons.delete),
-              onPressed: () {
-                
-              },
+              onPressed: () {},
             ),
           ],
         ),
-        onTap: () {
-          
-        },
+        onTap: () {},
       ),
     );
   }
 }
-
