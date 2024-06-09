@@ -16,7 +16,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   List<TextEditingController> addressesController = [TextEditingController()];
@@ -50,22 +49,6 @@ class _SignUpPageState extends State<SignUpPage> {
           return null;
         });
 
-    final email = TextFormField(
-        controller: emailController,
-        decoration: const InputDecoration(
-          labelText: "Email",
-          border: OutlineInputBorder(),
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Email address is required';
-          }
-          if (!EmailValidator.validate(value)) {
-            return 'Invalid email address';
-          }
-          return null;
-        });
-
     final username = TextFormField(
         controller: usernameController,
         decoration: const InputDecoration(
@@ -75,6 +58,9 @@ class _SignUpPageState extends State<SignUpPage> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Username is required';
+          }
+          if (!EmailValidator.validate(value)) {
+            return 'Invalid username';
           }
           return null;
         });
@@ -96,6 +82,20 @@ class _SignUpPageState extends State<SignUpPage> {
           return null;
         });
 
+    final contactNo = TextFormField(
+        controller: contactNoController,
+        decoration: const InputDecoration(
+          labelText: "Contact number",
+          border: OutlineInputBorder(),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Contact number is required';
+          }
+          // Add further validation for phone number format if needed
+          return null;
+        });
+
     final signUpButton = Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: ElevatedButton(
@@ -114,7 +114,7 @@ class _SignUpPageState extends State<SignUpPage> {
           if (_formKey.currentState!.validate()) {
             await context
                 .read<MyAuthProvider>()
-                .signUp(emailController.text, passwordController.text);
+                .signUp(usernameController.text, passwordController.text);
 
             // Get the current donor count
             int donorCount =
@@ -182,9 +182,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 children: [
                   firstName,
                   lastName,
-                  email,
                   username,
                   password,
+                  contactNo,
                   for (var i = 0; i < addressesController.length; i++)
                     Row(children: [
                       Expanded(

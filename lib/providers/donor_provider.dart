@@ -1,3 +1,5 @@
+// donor_provider.dart
+
 import 'package:flutter/material.dart';
 import '../models/donor_model.dart';
 import '../api/firebase_donor_api.dart';
@@ -34,6 +36,22 @@ class DonorListProvider with ChangeNotifier {
     String message = await firebaseService.addDonor(donor.toJson());
     print(message);
     notifyListeners();
+  }
+
+  Future<Donor?> getDonorByEmail(String email) async {
+    print("EMAIL ${email}");
+    final QuerySnapshot result = await FirebaseFirestore.instance
+        .collection('donors')
+        .where('username', isEqualTo: email)
+        .get();
+    print(email);
+    print(result.docs);
+
+    if (result.docs.isEmpty) {
+      return null;
+    } else {
+      return Donor.fromJson(result.docs.first.data() as Map<String, dynamic>);
+    }
   }
 
   void editDonor() {

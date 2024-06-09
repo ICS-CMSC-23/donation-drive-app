@@ -7,8 +7,7 @@ class DonationDrive {
   final String description;
   final DateTime startDate;
   final DateTime endDate;
-  final List<String> photos; // Proof photos
-  final List<String> donationIds; // Linked donations
+  final List<String> photos;
 
   DonationDrive({
     this.id,
@@ -18,7 +17,6 @@ class DonationDrive {
     required this.startDate,
     required this.endDate,
     this.photos = const [],
-    this.donationIds = const [],
   });
 
   factory DonationDrive.fromJson(Map<String, dynamic> json) {
@@ -30,7 +28,6 @@ class DonationDrive {
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
       photos: List<String>.from(json['photos']),
-      donationIds: List<String>.from(json['donationIds']),
     );
   }
 
@@ -43,13 +40,13 @@ class DonationDrive {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'organizationId': organizationId,
       'name': name,
       'description': description,
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String(),
       'photos': photos,
-      'donationIds': donationIds,
     };
   }
 }

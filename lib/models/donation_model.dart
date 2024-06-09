@@ -12,6 +12,8 @@ class Donation {
   final String contactNo;
   final int
       status; // 0 Pending, 1 Confirmed, 2 Scheduled for pick-up, 3 Complete, 4 Canceled
+  final int donorId;
+  final String? donationDriveId;
 
   Donation(
       {required this.organizationId,
@@ -23,7 +25,9 @@ class Donation {
       required this.dateTime,
       required this.addresses,
       required this.contactNo,
-      required this.status});
+      required this.status,
+      required this.donorId,
+      this.donationDriveId});
 
   factory Donation.fromJson(Map<String, dynamic> json) {
     return Donation(
@@ -31,12 +35,14 @@ class Donation {
         id: json['id'],
         categories: List<String>.from(json['categories']),
         isPickup: json['isPickup'],
-        weight: json['weight'],
+        weight: (json['weight'] as num).toDouble(),
         photoUrl: json['photoUrl'],
         dateTime: DateTime.parse(json['dateTime']),
         addresses: List<String>.from(json['addresses']),
         contactNo: json['contactNo'],
-        status: json['status']);
+        status: json['status'],
+        donorId: json['donorId'],
+        donationDriveId: json['donationDriveId']);
   }
 
   static List<Donation> fromJsonArray(String jsonData) {
@@ -47,6 +53,7 @@ class Donation {
   Map<String, dynamic> toJson() {
     return {
       'organizationId': organizationId,
+      'id': id,
       'categories': categories,
       'isPickup': isPickup,
       'weight': weight,
@@ -54,7 +61,9 @@ class Donation {
       'dateTime': dateTime.toIso8601String(),
       'addresses': addresses,
       'contactNo': contactNo,
-      'status': status
+      'status': status,
+      'donorId': donorId,
+      'donationDriveId': donationDriveId
     };
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'donationdetail.dart';
-import '/models/donation_model.dart'; // Assuming you have the Donation model defined
+import '/models/donation_model.dart';
 
 class DonationHistoryPage extends StatelessWidget {
   const DonationHistoryPage({Key? key}) : super(key: key);
@@ -12,7 +12,7 @@ class DonationHistoryPage extends StatelessWidget {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('donors')
-          .where('username', isEqualTo: uid) // Assuming 'username' is the Firebase UID
+          .where('username', isEqualTo: uid)
           .limit(1)
           .get();
 
@@ -53,7 +53,7 @@ class DonationHistoryPage extends StatelessWidget {
       return const Center(child: Text("User not logged in"));
     }
 
-    final String uid = user.email!; // Assuming the email is used as the UID in the 'username' field
+    final String uid = user.email!;
 
     return Scaffold(
       appBar: AppBar(
@@ -88,7 +88,7 @@ class DonationHistoryPage extends StatelessWidget {
                         crossAxisCount: 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        childAspectRatio: 1.17, // Adjusted aspect ratio for larger cards
+                        childAspectRatio: 1.17,
                       ),
                       itemCount: donations.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -104,7 +104,7 @@ class DonationHistoryPage extends StatelessWidget {
                           child: Card(
                             elevation: 4,
                             child: Container(
-                              height: 800, // Adjusting the height of the card
+                              height: 800,
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Column(
@@ -131,15 +131,15 @@ class DonationHistoryPage extends StatelessWidget {
                                         fontSize: 14,
                                       ),
                                     ),
-                                    const SizedBox(height: 10), // Added spacing below the date
+                                    const SizedBox(height: 10),
                                     Text(
-                                      donations[index].isPickup ? "Pickup" : "Dropoff", // Display pickup or dropoff
+                                      donations[index].isPickup ? "Pickup" : "Dropoff",
                                       style: const TextStyle(
                                         fontSize: 14,
                                       ),
                                     ),
                                     const SizedBox(height: 10),
-                                    _buildStatusWidget(donations[index].status), // Display status
+                                    _buildStatusWidget(donations[index].status),
                                   ],
                                 ),
                               ),
@@ -195,7 +195,6 @@ class DonationHistoryPage extends StatelessWidget {
   }
 
   String _getStatusText(int status) {
-    // Define status text based on status code
     switch (status) {
       case 0:
         return "Pending";
