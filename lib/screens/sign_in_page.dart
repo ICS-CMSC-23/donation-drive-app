@@ -27,6 +27,8 @@ class _SignInPageState extends State<SignInPage> {
       decoration: const InputDecoration(
         labelText: "Email",
         border: OutlineInputBorder(),
+        suffixIcon: Icon(Icons.email),
+        errorStyle: TextStyle(color: Colors.redAccent),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -46,6 +48,8 @@ class _SignInPageState extends State<SignInPage> {
       decoration: const InputDecoration(
         labelText: 'Password',
         border: OutlineInputBorder(),
+        suffixIcon: Icon(Icons.lock),
+        errorStyle: TextStyle(color: Colors.redAccent),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
