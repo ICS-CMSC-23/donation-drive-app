@@ -35,10 +35,9 @@ class ViewAllOrgs extends StatelessWidget {
             }
             return ListView(
               children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                Map<String, dynamic> data =
-                    document.data()! as Map<String, dynamic>;
-                Organization organization = Organization.fromJson(data);
-                return _buildOrganizationCard(organization);
+                Organization organization = Organization.fromJson(
+                    document.data()! as Map<String, dynamic>);
+                return _buildOrganizationCard(organization, document.id);
               }).toList(),
             );
           },
@@ -114,23 +113,41 @@ class ViewAllOrgs extends StatelessWidget {
               fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         SizedBox(height: 8),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: urls
-                .map((url) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.network(url,
-                          width: 100, height: 100, fit: BoxFit.cover),
-                    ))
-                .toList(),
-          ),
-        ),
+        urls.isEmpty
+            ? const Text('Not available', style: TextStyle(fontSize: 16))
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: urls
+                      .map((url) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.network(url,
+                                width: 100, height: 100, fit: BoxFit.cover),
+                          ))
+                      .toList(),
+                ),
+              ),
       ],
     );
   }
 
-  Widget _buildOrganizationCard(Organization org) {
+  Widget _buildToggleApprovalButton(String docId, bool isApproved) {
+    return ElevatedButton(
+      onPressed: () {
+        // This will toggle the approval status
+        FirebaseFirestore.instance
+            .collection('organizations')
+            .doc(docId)
+            .update({'isApproved': !isApproved});
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isApproved ? Colors.red : Colors.green,
+      ),
+      child: Text(isApproved ? 'Disapprove' : 'Approve'),
+    );
+  }
+
+  Widget _buildOrganizationCard(Organization org, String docId) {
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.only(bottom: 20),
@@ -139,10 +156,9 @@ class ViewAllOrgs extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              org.organizationName,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            Text(org.organizationName,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             _buildBoldText('About:', org.about),
             SizedBox(height: 8),
@@ -157,6 +173,8 @@ class ViewAllOrgs extends StatelessWidget {
             _buildBoldText('Open Status:', org.isOpen ? "Open" : "Closed"),
             SizedBox(height: 8),
             _buildBoldText('Donation Drives:', org.donationDriveIds.join(", ")),
+            SizedBox(height: 8),
+            _buildToggleApprovalButton(docId, org.isApproved),
           ],
         ),
       ),
