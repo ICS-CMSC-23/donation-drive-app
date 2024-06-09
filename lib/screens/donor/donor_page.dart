@@ -11,12 +11,11 @@ class DonorPage extends StatefulWidget {
   const DonorPage({super.key});
 
   @override
-  _DonorPageState createState() => _DonorPageState();
+  State<DonorPage> createState() => _DonorPageState();
 }
 
 class _DonorPageState extends State<DonorPage> {
   void approveOrganization(Organization organization) {
-    // Navigate to DonationFormPage with the selected organization
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -24,7 +23,6 @@ class _DonorPageState extends State<DonorPage> {
       ),
     );
 
-    // Show snackbar message for approval
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Organization chosen"),
@@ -34,8 +32,7 @@ class _DonorPageState extends State<DonorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider =
-        Provider.of<MyAuthProvider>(context); // Get the auth provider
+    final authProvider = Provider.of<MyAuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -90,7 +87,7 @@ class _DonorPageState extends State<DonorPage> {
               );
             },
           ),
-          const SizedBox(height: 16), // Add some space between the buttons
+          const SizedBox(height: 16),
           FloatingActionButton(
             heroTag: 'signOutButton',
             child: const Icon(Icons.exit_to_app),
@@ -133,7 +130,7 @@ class _DonorPageState extends State<DonorPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
-                  onPressed: onApprove,
+                  onPressed: organization.isOpen ? onApprove : null,
                   child: const Text("Select this organization"),
                 )
               ],

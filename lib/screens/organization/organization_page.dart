@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/donation_model.dart';
 import '../../models/donor_model.dart';
+import '../../models/donation_drive_model.dart';
 import '../../providers/donation_provider.dart';
 import '../../providers/donor_provider.dart';
-import '../../providers/auth_provider.dart'; // Import the auth provider
+import '../../providers/donation_drive_provider.dart';
+import '../../providers/auth_provider.dart';
 import 'organization_profile.dart';
 import 'organization_donation.dart';
-import 'organization_donation_drive.dart'; // Import the new page
+import 'organization_donation_drive.dart';
 
 class OrganizationPage extends StatefulWidget {
   const OrganizationPage({super.key});
@@ -19,11 +21,11 @@ class OrganizationPage extends StatefulWidget {
 class _OrganizationPageState extends State<OrganizationPage> {
   @override
   Widget build(BuildContext context) {
-    // Fetch donation data from the provider
+    final donationDriveProvider =
+        Provider.of<DonationDriveListProvider>(context);
     final donationProvider = Provider.of<DonationListProvider>(context);
     final donorProvider = Provider.of<DonorListProvider>(context);
-    final authProvider =
-        Provider.of<MyAuthProvider>(context); // Get the auth provider
+    final authProvider = Provider.of<MyAuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -78,7 +80,10 @@ class _OrganizationPageState extends State<OrganizationPage> {
                           addresses: [],
                           contactNo: 'Unknown'));
 
-                  return DonationCard(donor: donor, donation: donation);
+                  return DonationCard(
+                      donor: donor,
+                      donation: donation,
+                      donationDrives: donationDriveProvider.donationDrives);
                 },
               );
             },
@@ -100,7 +105,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
               );
             },
           ),
-          const SizedBox(height: 16), // Add some space between the buttons
+          const SizedBox(height: 16),
           FloatingActionButton(
             heroTag: 'donationDriveButton',
             child: const Icon(Icons.add_business),
@@ -113,7 +118,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
               );
             },
           ),
-          const SizedBox(height: 16), // Add some space between the buttons
+          const SizedBox(height: 16),
           FloatingActionButton(
             heroTag: 'signOutButton',
             child: const Icon(Icons.exit_to_app),
@@ -128,28 +133,70 @@ class _OrganizationPageState extends State<OrganizationPage> {
   }
 }
 
-class DonationCard extends StatelessWidget {
+class DonationCard extends StatefulWidget {
   final Donor donor;
   final Donation donation;
+  final List<DonationDrive> donationDrives;
 
-  const DonationCard({super.key, required this.donor, required this.donation});
+  const DonationCard({
+    super.key,
+    required this.donor,
+    required this.donation,
+    required this.donationDrives,
+  });
+
+  @override
+  _DonationCardState createState() => _DonationCardState();
+}
+
+class _DonationCardState extends State<DonationCard> {
+  String? selectedDriveId;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDriveId = widget.donation.donationDriveId;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: donation.photoUrl == 'null'
+          backgroundImage: widget.donation.photoUrl == 'null'
               ? null
-              : NetworkImage(donation.photoUrl ?? ""),
-          child: donation.photoUrl == 'null' ? const Icon(Icons.image) : null,
+              : NetworkImage(widget.donation.photoUrl ?? ""),
+          child: widget.donation.photoUrl == 'null'
+              ? const Icon(Icons.image)
+              : null,
         ),
-        title: Text(donor.username),
+        title: Text(widget.donor.username),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Categories: ${donation.categories.join(', ')}'),
-            Text('Contact: $donation.contactNo'),
+            Text('Categories: ${widget.donation.categories.join(', ')}'),
+            Text('Contact: ${widget.donation.contactNo}'),
+            DropdownButton<String>(
+              hint: const Text("Select Donation Drive"),
+              value: selectedDriveId,
+              items: widget.donationDrives.map((drive) {
+                return DropdownMenuItem<String>(
+                  value: drive.id,
+                  child: Text(drive.name),
+                );
+              }).toList(),
+              onChanged: (newValue) async {
+                setState(() {
+                  selectedDriveId = newValue;
+                });
+
+                // Update the donation with the selected donation drive ID
+                final donationProvider =
+                    Provider.of<DonationListProvider>(context, listen: false);
+                donationProvider.editDonation(
+                    widget.donation.id!, {'donationDriveId': newValue});
+              },
+            ),
           ],
         ),
         onTap: () {
@@ -157,8 +204,8 @@ class DonationCard extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => DonationDetailsScreen(
-                      donationDetails:
-                          DonationDetails(donor: donor, donation: donation),
+                      donationDetails: DonationDetails(
+                          donor: widget.donor, donation: widget.donation),
                     )),
           );
         },
