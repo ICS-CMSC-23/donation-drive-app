@@ -13,7 +13,7 @@ class Donation {
   final int
       status; // 0 Pending, 1 Confirmed, 2 Scheduled for pick-up, 3 Complete, 4 Canceled
   final int donorId;
-  final int? donationDriveId;
+  final String? donationDriveId;
 
   Donation(
       {required this.organizationId,
@@ -53,6 +53,7 @@ class Donation {
   Map<String, dynamic> toJson() {
     return {
       'organizationId': organizationId,
+      'id': id,
       'categories': categories,
       'isPickup': isPickup,
       'weight': weight,

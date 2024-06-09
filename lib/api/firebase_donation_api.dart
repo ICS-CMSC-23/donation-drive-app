@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../models/donation_model.dart';
 
 class FirebaseDonationAPI {
   static final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  Future<String> addDonation(Map<String, dynamic> donation) async {
+  Future<String> addDonation(Donation donation) async {
     try {
-      await db.collection('donations').add(donation);
+      DocumentReference docRef =
+          await db.collection('donations').add(donation.toJson());
+      await docRef.update({'id': docRef.id});
       return "Successfully added donation!";
     } on FirebaseException catch (e) {
       return "Failed with error '${e.code}: ${e.message}";
@@ -26,8 +29,13 @@ class FirebaseDonationAPI {
     }
   }
 
-  Future<String> editDonation(String? id) async {
-    // TODO: fill edit Donation
-    return "Dummy string";
+  Future<String> editDonation(
+      String? id, Map<String, dynamic> updatedData) async {
+    try {
+      await db.collection("donations").doc(id).update(updatedData);
+      return "Successfully edited donation!";
+    } on FirebaseException catch (e) {
+      return "Failed with error '${e.code}: ${e.message}";
+    }
   }
 }
