@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:project_jdvillamin/screens/sign_in_page.dart';
+import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../../providers/organization_provider.dart';
 import 'donor_profile.dart';
@@ -22,7 +22,8 @@ class DonorPage extends StatelessWidget {
       body: Stack(
         children: [
           StreamBuilder<QuerySnapshot>(
-            stream: Provider.of<OrganizationListProvider>(context).organizations,
+            stream:
+                Provider.of<OrganizationListProvider>(context).organizations,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -77,7 +78,8 @@ class DonorPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrganizationCard(BuildContext context, Organization organization, VoidCallback onApprove) {
+  Widget _buildOrganizationCard(
+      BuildContext context, Organization organization, VoidCallback onApprove) {
     return GestureDetector(
       onTap: () {
         _showOverlay(context, organization, onApprove);
@@ -105,9 +107,7 @@ class DonorPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround
-              ),
+              const Row(mainAxisAlignment: MainAxisAlignment.spaceAround),
             ],
           ),
         ),
@@ -116,6 +116,8 @@ class DonorPage extends StatelessWidget {
   }
 
   Widget _buildDrawer(BuildContext context) {
+    final authProvider = Provider.of<MyAuthProvider>(context);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -148,18 +150,17 @@ class DonorPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const DonationHistoryPage()),
+                MaterialPageRoute(
+                    builder: (context) => const DonationHistoryPage()),
               );
             },
           ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Log Out'),
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const SignInPage()),
-              );
+            onTap: () async {
+              await authProvider.signOut();
+              Navigator.pop(context);
             },
           ),
         ],
@@ -167,112 +168,118 @@ class DonorPage extends StatelessWidget {
     );
   }
 
-  void _showOverlay(BuildContext context, Organization organization, VoidCallback onApprove) {
-  OverlayEntry? overlay;
+  void _showOverlay(
+      BuildContext context, Organization organization, VoidCallback onApprove) {
+    OverlayEntry? overlay;
 
-  // Create a controller for the animation
-  AnimationController? controller;
+    // Create a controller for the animation
+    AnimationController? controller;
 
-  // Define the animation
-  Animation<double>? animation;
+    // Define the animation
+    Animation<double>? animation;
 
-  // Function to remove overlay and dispose animation controller
-  void removeOverlayAndDispose() {
-    overlay?.remove();
-    if (controller != null) {
-      controller.dispose();
+    // Function to remove overlay and dispose animation controller
+    void removeOverlayAndDispose() {
+      overlay?.remove();
+      if (controller != null) {
+        controller.dispose();
+      }
     }
-  }
 
-  controller = AnimationController(
-    duration: const Duration(milliseconds: 300), // Adjust duration as needed
-    vsync: Navigator.of(context),
-  );
+    controller = AnimationController(
+      duration: const Duration(milliseconds: 300), // Adjust duration as needed
+      vsync: Navigator.of(context),
+    );
 
-  animation = CurvedAnimation(
-    parent: controller,
-    curve: Curves.easeInOut,
-  );
+    animation = CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeInOut,
+    );
 
-  // Start the animation
-  controller.forward();
+    // Start the animation
+    controller.forward();
 
-  overlay = OverlayEntry(
-    builder: (context) => AnimatedBuilder(
-      animation: animation!,
-      builder: (context, child) {
-        return Opacity(
-          opacity: animation!.value,
-          child: Stack(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  controller!.reverse(); // Reverse the animation when overlay is tapped
-                },
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: Container(
-                    color: Colors.black.withOpacity(0.5),
+    overlay = OverlayEntry(
+      builder: (context) => AnimatedBuilder(
+        animation: animation!,
+        builder: (context, child) {
+          return Opacity(
+            opacity: animation!.value,
+            child: Stack(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    controller!.reverse();
+                  },
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                    ),
                   ),
                 ),
-              ),
-              Center(
-                child: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * .75,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          organization.organizationName,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                Center(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * .75,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            organization.organizationName,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 15),
-                        _buildDetailBox('Address', organization.addresses.join(", ")),
-                        const SizedBox(height: 10),
-                        _buildDetailBox('Contact Number', organization.contactNo),
-                        const SizedBox(height: 10),
-                        _buildDetailBox('About', organization.about ?? "No description available"),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            onApprove();
-                            removeOverlayAndDispose(); // Reverse the animation when button is pressed
-                          },
-                          child: const Text("Select this organization"),
-                        ),
-                      ],
+                          const SizedBox(height: 15),
+                          _buildDetailBox(
+                              'Address', organization.addresses.join(", ")),
+                          const SizedBox(height: 10),
+                          _buildDetailBox(
+                              'Contact Number', organization.contactNo),
+                          const SizedBox(height: 10),
+                          _buildDetailBox('About',
+                              organization.about ?? "No description available"),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: organization.isOpen
+                                ? () {
+                                    onApprove();
+                                    removeOverlayAndDispose();
+                                  }
+                                : null,
+                            child: const Text("Select this organization"),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
-    ),
-  );
+              ],
+            ),
+          );
+        },
+      ),
+    );
 
-  Overlay.of(context).insert(overlay);
+    Overlay.of(context).insert(overlay);
 
-  // Add listener to dispose the animation controller when the overlay is removed
-  controller.addStatusListener((status) {
-    if (status == AnimationStatus.dismissed) {
-      removeOverlayAndDispose();
-    }
-  });
-}
+    // Add listener to dispose the animation controller when the overlay is removed
+    controller.addStatusListener((status) {
+      if (status == AnimationStatus.dismissed) {
+        removeOverlayAndDispose();
+      }
+    });
+  }
 
   Widget _buildDetailBox(String title, String detail) {
     return SizedBox(
@@ -311,6 +318,4 @@ class DonorPage extends StatelessWidget {
       ),
     );
   }
-
 }
-
