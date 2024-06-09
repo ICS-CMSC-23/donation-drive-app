@@ -104,6 +104,32 @@ class ViewAllOrgs extends StatelessWidget {
     );
   }
 
+  Widget _buildProofsOfLegitimacy(List<String> urls) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Proofs of Legitimacy:',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: urls
+                .map((url) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.network(url,
+                          width: 100, height: 100, fit: BoxFit.cover),
+                    ))
+                .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildOrganizationCard(Organization org) {
     return Card(
       color: Colors.white,
@@ -124,8 +150,7 @@ class ViewAllOrgs extends StatelessWidget {
             SizedBox(height: 8),
             _buildBoldText('Contact Number:', org.contactNo),
             SizedBox(height: 8),
-            _buildBoldText(
-                'Proofs of Legitimacy:', org.proofsOfLegitimacy.join(", ")),
+            _buildProofsOfLegitimacy(org.proofsOfLegitimacy),
             SizedBox(height: 8),
             _buildStatusText('Status:', org.isApproved),
             SizedBox(height: 8),
