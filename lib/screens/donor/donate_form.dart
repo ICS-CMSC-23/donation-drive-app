@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../../models/organization_model.dart';
 import '../../models/donation_model.dart';
 import '../../providers/donation_provider.dart';
@@ -26,9 +30,41 @@ class _DonationFormPageState extends State<DonationFormPage> {
   TextEditingController dateController = TextEditingController();
   List<TextEditingController> addressesController = [TextEditingController()];
   TextEditingController contactNoController = TextEditingController();
+  PlatformFile? pickedFile;
+  String? uploadedFileUrl;
 
   final categories = ['Food', 'Clothes', 'Cash', 'Necessities', 'Others'];
   final options = ['Pickup', 'Drop-off'];
+
+  Future<void> selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      setState(() {
+        pickedFile = result.files.first;
+      });
+    }
+  }
+
+  Future<String?> uploadFile() async {
+    if (pickedFile == null) return null;
+
+    final path = 'donations/${pickedFile!.name}';
+    final ref = FirebaseStorage.instance.ref().child(path);
+
+    if (kIsWeb) {
+      final uploadTask = ref.putData(pickedFile!.bytes!);
+      final snapshot = await uploadTask.whenComplete(() => {});
+      final fileUrl = await snapshot.ref.getDownloadURL();
+      return fileUrl;
+    } else {
+      final file = File(pickedFile!.path!);
+      final uploadTask = ref.putFile(file);
+      final snapshot = await uploadTask.whenComplete(() => {});
+      final fileUrl = await snapshot.ref.getDownloadURL();
+      return fileUrl;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +151,7 @@ class _DonationFormPageState extends State<DonationFormPage> {
           lastDate: DateTime(2101),
         );
         if (pickedDate != null) {
+          // ignore: use_build_context_synchronously
           final TimeOfDay? pickedTime = await showTimePicker(
             context: context,
             initialTime: TimeOfDay.now(),
@@ -199,6 +236,13 @@ class _DonationFormPageState extends State<DonationFormPage> {
       ],
     );
 
+    final filePickerButton = ElevatedButton(
+      onPressed: selectFile,
+      child: const Text('Select File'),
+    );
+
+    final fileNameText = Text(pickedFile?.name ?? 'No file selected');
+
     final submitButton = ElevatedButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(
@@ -213,6 +257,9 @@ class _DonationFormPageState extends State<DonationFormPage> {
       ),
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
+          if (pickedFile != null) {
+            uploadedFileUrl = await uploadFile();
+          }
           await _submitForm();
         }
       },
@@ -248,6 +295,9 @@ class _DonationFormPageState extends State<DonationFormPage> {
                   addAddressButton,
                   const SizedBox(height: 10),
                   contactNoField,
+                  const SizedBox(height: 20),
+                  filePickerButton,
+                  fileNameText,
                   const SizedBox(height: 20),
                   submitButton,
                 ],
@@ -291,7 +341,8 @@ class _DonationFormPageState extends State<DonationFormPage> {
           addressesController.map((controller) => controller.text).toList(),
       contactNo: contactNoController.text,
       status: 0,
-      donorId: donor.userId!, // Set the donorId
+      donorId: donor.userId!,
+      photoUrl: uploadedFileUrl,
     );
 
     Provider.of<DonationListProvider>(context, listen: false)

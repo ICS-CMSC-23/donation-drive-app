@@ -35,7 +35,7 @@ class Donation {
         id: json['id'],
         categories: List<String>.from(json['categories']),
         isPickup: json['isPickup'],
-        weight: json['weight'],
+        weight: (json['weight'] as num).toDouble(),
         photoUrl: json['photoUrl'],
         dateTime: DateTime.parse(json['dateTime']),
         addresses: List<String>.from(json['addresses']),

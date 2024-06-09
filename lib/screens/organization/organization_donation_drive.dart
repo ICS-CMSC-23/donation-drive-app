@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../../providers/donation_drive_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/donation_drive_model.dart';
@@ -76,6 +80,36 @@ class DonationDrivesScreen extends StatelessWidget {
         text: donationDrive?.startDate.toIso8601String() ?? '');
     final TextEditingController endDateController = TextEditingController(
         text: donationDrive?.endDate.toIso8601String() ?? '');
+    PlatformFile? pickedFile;
+    String? uploadedFileUrl;
+
+    Future<void> selectFile() async {
+      final result = await FilePicker.platform.pickFiles();
+
+      if (result != null) {
+        pickedFile = result.files.first;
+      }
+    }
+
+    Future<String?> uploadFile() async {
+      if (pickedFile == null) return null;
+
+      final path = 'donation_drives/${pickedFile!.name}';
+      final ref = FirebaseStorage.instance.ref().child(path);
+
+      if (kIsWeb) {
+        final uploadTask = ref.putData(pickedFile!.bytes!);
+        final snapshot = await uploadTask.whenComplete(() => {});
+        final fileUrl = await snapshot.ref.getDownloadURL();
+        return fileUrl;
+      } else {
+        final file = File(pickedFile!.path!);
+        final uploadTask = ref.putFile(file);
+        final snapshot = await uploadTask.whenComplete(() => {});
+        final fileUrl = await snapshot.ref.getDownloadURL();
+        return fileUrl;
+      }
+    }
 
     showDialog(
       context: context,
@@ -86,34 +120,41 @@ class DonationDrivesScreen extends StatelessWidget {
               : 'Edit Donation Drive'),
           content: Form(
             key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter a name' : null,
-                ),
-                TextFormField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter a description' : null,
-                ),
-                TextFormField(
-                  controller: startDateController,
-                  decoration: const InputDecoration(labelText: 'Start Date'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter a start date' : null,
-                ),
-                TextFormField(
-                  controller: endDateController,
-                  decoration: const InputDecoration(labelText: 'End Date'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter an end date' : null,
-                ),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter a name' : null,
+                  ),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter a description' : null,
+                  ),
+                  TextFormField(
+                    controller: startDateController,
+                    decoration: const InputDecoration(labelText: 'Start Date'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter a start date' : null,
+                  ),
+                  TextFormField(
+                    controller: endDateController,
+                    decoration: const InputDecoration(labelText: 'End Date'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter an end date' : null,
+                  ),
+                  ElevatedButton(
+                    onPressed: selectFile,
+                    child: const Text('Select Photo'),
+                  ),
+                  Text(pickedFile?.name ?? 'No file selected'),
+                ],
+              ),
             ),
           ),
           actions: [
@@ -124,6 +165,9 @@ class DonationDrivesScreen extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
+                  if (pickedFile != null) {
+                    uploadedFileUrl = await uploadFile();
+                  }
                   String email = authProvider.userObj!.email!;
                   String? organizationId = await donationDriveProvider
                       .getOrganizationIdByEmail(email);
@@ -135,7 +179,10 @@ class DonationDrivesScreen extends StatelessWidget {
                       description: descriptionController.text,
                       startDate: DateTime.parse(startDateController.text),
                       endDate: DateTime.parse(endDateController.text),
-                      photos: donationDrive?.photos ?? [],
+                      photos: [
+                        ...donationDrive?.photos ?? [],
+                        if (uploadedFileUrl != null) uploadedFileUrl!,
+                      ],
                     );
 
                     if (donationDrive == null) {
