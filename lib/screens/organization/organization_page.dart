@@ -1,58 +1,88 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../models/donation_model.dart';
+import '../../models/donor_model.dart';
+import '../../providers/donation_provider.dart';
+import '../../providers/donor_provider.dart';
 import 'organization_profile.dart';
 
 class OrganizationPage extends StatefulWidget {
   const OrganizationPage({super.key});
 
   @override
-  _OrganizationPageState createState() => _OrganizationPageState();
-}
-
-class Donation {
-  final String donorName;
-  final List<String> categories;
-  final String photo;
-  final String contactNumber;
-
-  Donation({
-    required this.donorName,
-    required this.categories,
-    required this.photo,
-    required this.contactNumber,
-  });
+  State<OrganizationPage> createState() => _OrganizationPageState();
 }
 
 class _OrganizationPageState extends State<OrganizationPage> {
-  List<Donation> fetchDonations() {
-    return [
-      Donation(
-        donorName: 'Ayen Nery',
-        categories: ['Food', 'Clothes'],
-        photo: 'null',
-        contactNumber: '+1234567890',
-      ),
-      Donation(
-        donorName: 'Hev Abi',
-        categories: ['Cash'],
-        photo: 'null',
-        contactNumber: '+9876543210',
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Fetch donation data from backend
-    List<Donation> donations = fetchDonations();
+    // Fetch donation data from the provider
+    final donationProvider = Provider.of<DonationListProvider>(context);
+    final donorProvider = Provider.of<DonorListProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Organization Homepage'),
       ),
-      body: ListView.builder(
-        itemCount: donations.length,
-        itemBuilder: (context, index) {
-          return DonationCard(donation: donations[index]);
+      body: StreamBuilder(
+        stream: donationProvider.donations,
+        builder: (context, AsyncSnapshot donationSnapshot) {
+          if (donationSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!donationSnapshot.hasData) {
+            return const Center(child: Text('No donations available'));
+          }
+
+          List<Donation> donations = donationSnapshot.data.docs
+              .map<Donation>((doc) =>
+                  Donation.fromJson(doc.data() as Map<String, dynamic>))
+              .toList();
+
+          print('Fetched Donations: ${donations[0].donorId}');
+
+          return StreamBuilder(
+            stream: donorProvider.donors,
+            builder: (context, AsyncSnapshot donorSnapshot) {
+              if (donorSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (!donorSnapshot.hasData) {
+                return const Center(child: Text('No donors available'));
+              }
+
+              List<Donor> donors = donorSnapshot.data.docs
+                  .map<Donor>((doc) =>
+                      Donor.fromJson(doc.data() as Map<String, dynamic>))
+                  .toList();
+
+              print('Donors: $donors');
+
+              return ListView.builder(
+                itemCount: donations.length,
+                itemBuilder: (context, index) {
+                  Donation donation = donations[index];
+                  Donor? donor = donors.firstWhere(
+                      (donor) => donor.userId == donation.donorId,
+                      orElse: () => Donor(
+                          userId: null,
+                          id: null,
+                          name: 'Unknown',
+                          username: 'Unknown',
+                          password: 'Unknown',
+                          addresses: [],
+                          contactNo: 'Unknown'));
+
+                  return DonationCard(
+                    donorName: donor.name,
+                    categories: donation.categories,
+                    photo: donation.photoUrl ?? 'null',
+                    contactNumber: donor.contactNo,
+                  );
+                },
+              );
+            },
+          );
         },
       ),
     );
@@ -60,23 +90,32 @@ class _OrganizationPageState extends State<OrganizationPage> {
 }
 
 class DonationCard extends StatelessWidget {
-  final Donation donation;
+  final String donorName;
+  final List<String> categories;
+  final String photo;
+  final String contactNumber;
 
-  DonationCard({required this.donation});
+  DonationCard({
+    required this.donorName,
+    required this.categories,
+    required this.photo,
+    required this.contactNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: NetworkImage(donation.photo),
+          backgroundImage: photo == 'null' ? null : NetworkImage(photo),
+          child: photo == 'null' ? const Icon(Icons.image) : null,
         ),
-        title: Text(donation.donorName),
+        title: Text(donorName),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Categories: ${donation.categories.join(', ')}'),
-            Text('Contact: ${donation.contactNumber}'),
+            Text('Categories: ${categories.join(', ')}'),
+            Text('Contact: $contactNumber'),
           ],
         ),
         onTap: () {
