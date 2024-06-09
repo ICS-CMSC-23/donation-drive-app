@@ -29,7 +29,16 @@ void main() async {
             create: ((context) => OrganizationListProvider())),
         ChangeNotifierProvider(create: ((context) => DonationListProvider())),
         ChangeNotifierProvider(
-            create: ((context) => DonationDriveListProvider()))
+          create: ((context) {
+            final myAuthProvider =
+                Provider.of<MyAuthProvider>(context, listen: false);
+            final organizationListProvider =
+                Provider.of<OrganizationListProvider>(context, listen: false);
+            return DonationDriveListProvider(
+                authProvider: myAuthProvider,
+                organizationListProvider: organizationListProvider);
+          }),
+        )
       ],
       child: const MyApp(),
     ),

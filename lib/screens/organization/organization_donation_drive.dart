@@ -5,6 +5,8 @@ import '../../providers/auth_provider.dart';
 import '../../models/donation_drive_model.dart';
 
 class DonationDrivesScreen extends StatelessWidget {
+  const DonationDrivesScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     DonationDriveListProvider donationDriveProvider =
@@ -13,15 +15,14 @@ class DonationDrivesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Donation Drives'),
+        title: const Text('Donation Drives'),
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Search by donation drive name',
                 prefixIcon: Icon(Icons.search),
               ),
@@ -30,7 +31,6 @@ class DonationDrivesScreen extends StatelessWidget {
               },
             ),
           ),
-          // Donation Drives List
           Expanded(
             child: Consumer<DonationDriveListProvider>(
               builder: (context, provider, child) {
@@ -57,7 +57,7 @@ class DonationDrivesScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showDonationDriveDialog(
             context, authProvider, donationDriveProvider),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -67,7 +67,7 @@ class DonationDrivesScreen extends StatelessWidget {
       MyAuthProvider authProvider,
       DonationDriveListProvider donationDriveProvider,
       {DonationDrive? donationDrive}) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final TextEditingController nameController =
         TextEditingController(text: donationDrive?.name ?? '');
     final TextEditingController descriptionController =
@@ -85,31 +85,31 @@ class DonationDrivesScreen extends StatelessWidget {
               ? 'Add Donation Drive'
               : 'Edit Donation Drive'),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
                   controller: nameController,
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: const InputDecoration(labelText: 'Name'),
                   validator: (value) =>
                       value!.isEmpty ? 'Please enter a name' : null,
                 ),
                 TextFormField(
                   controller: descriptionController,
-                  decoration: InputDecoration(labelText: 'Description'),
+                  decoration: const InputDecoration(labelText: 'Description'),
                   validator: (value) =>
                       value!.isEmpty ? 'Please enter a description' : null,
                 ),
                 TextFormField(
                   controller: startDateController,
-                  decoration: InputDecoration(labelText: 'Start Date'),
+                  decoration: const InputDecoration(labelText: 'Start Date'),
                   validator: (value) =>
                       value!.isEmpty ? 'Please enter a start date' : null,
                 ),
                 TextFormField(
                   controller: endDateController,
-                  decoration: InputDecoration(labelText: 'End Date'),
+                  decoration: const InputDecoration(labelText: 'End Date'),
                   validator: (value) =>
                       value!.isEmpty ? 'Please enter an end date' : null,
                 ),
@@ -119,11 +119,11 @@ class DonationDrivesScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
-                if (_formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                   String email = authProvider.userObj!.email!;
                   String? organizationId = await donationDriveProvider
                       .getOrganizationIdByEmail(email);
@@ -161,7 +161,8 @@ class DonationDriveItem extends StatelessWidget {
   final DonationDrive donationDrive;
   final VoidCallback onEdit;
 
-  DonationDriveItem({required this.donationDrive, required this.onEdit});
+  const DonationDriveItem(
+      {super.key, required this.donationDrive, required this.onEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +170,7 @@ class DonationDriveItem extends StatelessWidget {
         Provider.of<DonationDriveListProvider>(context);
 
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: ListTile(
         title: Text(donationDrive.name),
         subtitle: Text(
@@ -178,11 +179,11 @@ class DonationDriveItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: onEdit,
             ),
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 donationDriveProvider.deleteDonationDrive(donationDrive.id!);
               },

@@ -35,4 +35,12 @@ class FirebaseDonationDriveAPI {
       return "Failed with error '${e.code}: ${e.message}";
     }
   }
+
+  Stream<QuerySnapshot> getDonationDrivesByOrganizationId(
+      String? organizationId) {
+    return db
+        .collection("donationDrives")
+        .where('organizationId', isEqualTo: organizationId)
+        .snapshots();
+  }
 }

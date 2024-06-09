@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/organization_model.dart';
+import 'organization_provider.dart';
+import 'auth_provider.dart';
 import '../models/donation_drive_model.dart';
 import '../api/firebase_donation_drive_api.dart';
 
@@ -9,8 +12,11 @@ class DonationDriveListProvider with ChangeNotifier {
   int _donationDriveCount = 0;
   List<DonationDrive> _allDonationDrives = [];
   List<DonationDrive> _filteredDonationDrives = [];
+  MyAuthProvider authProvider;
+  OrganizationListProvider organizationListProvider;
 
-  DonationDriveListProvider() {
+  DonationDriveListProvider(
+      {required this.authProvider, required this.organizationListProvider}) {
     fetchDonationDrives();
   }
 
@@ -18,8 +24,14 @@ class DonationDriveListProvider with ChangeNotifier {
 
   int get donationDriveCount => _donationDriveCount;
 
-  void fetchDonationDrives() {
-    _donationDriveStream = firebaseService.getAllDonationDrives();
+  Future<void> fetchDonationDrives() async {
+    String email = authProvider.userObj!.email!;
+    Organization? organization =
+        await organizationListProvider.getOrganizationByUsername(email);
+    print(email);
+    print(organization?.id);
+    _donationDriveStream =
+        firebaseService.getDonationDrivesByOrganizationId(organization?.id);
     _donationDriveStream.listen((snapshot) {
       _allDonationDrives = snapshot.docs
           .map((doc) =>
