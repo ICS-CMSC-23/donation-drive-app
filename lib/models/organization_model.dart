@@ -10,7 +10,7 @@ class Organization {
   final String contactNo;
   final String organizationName;
   final List<String> proofsOfLegitimacy;
-  final bool isApproved; // True for approved, False for disapproved
+  bool isApproved; // True for approved, False for disapproved
   final String? about;
   bool isOpen; // True for open, False for close
   final List<String> donationDriveIds;
