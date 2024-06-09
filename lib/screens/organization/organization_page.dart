@@ -6,6 +6,7 @@ import '../../providers/donation_provider.dart';
 import '../../providers/donor_provider.dart';
 import 'organization_profile.dart';
 import 'organization_donation.dart';
+import 'organization_donation_drive.dart'; // Import the new page
 
 class OrganizationPage extends StatefulWidget {
   const OrganizationPage({super.key});
@@ -81,16 +82,35 @@ class _OrganizationPageState extends State<OrganizationPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.account_circle),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const OrganizationProfileScreen(),
-            ),
-          );
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'profileButton',
+            child: const Icon(Icons.account_circle),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OrganizationProfileScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 16), // Add some space between the buttons
+          FloatingActionButton(
+            heroTag: 'donationDriveButton',
+            child: const Icon(Icons.add_business),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DonationDrivesScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

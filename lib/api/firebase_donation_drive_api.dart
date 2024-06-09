@@ -5,7 +5,9 @@ class FirebaseDonationDriveAPI {
 
   Future<String> addDonationDrive(Map<String, dynamic> donationDrive) async {
     try {
-      await db.collection('donationDrives').add(donationDrive);
+      DocumentReference docRef =
+          await db.collection('donationDrives').add(donationDrive);
+      await docRef.update({'id': docRef.id});
       return "Successfully added donation drive!";
     } on FirebaseException catch (e) {
       return "Failed with error '${e.code}: ${e.message}";
@@ -13,7 +15,6 @@ class FirebaseDonationDriveAPI {
   }
 
   Stream<QuerySnapshot> getAllDonationDrives() {
-    print(db.collection("donationDrives").snapshots());
     return db.collection("donationDrives").snapshots();
   }
 
@@ -26,8 +27,12 @@ class FirebaseDonationDriveAPI {
     }
   }
 
-  Future<String> editDonationDrive(String? id) async {
-    // TODO: fill edit Donation
-    return "Dummy string";
+  Future<String> editDonationDrive(String id, Map<String, dynamic> data) async {
+    try {
+      await db.collection("donationDrives").doc(id).update(data);
+      return "Successfully edited donation drive!";
+    } on FirebaseException catch (e) {
+      return "Failed with error '${e.code}: ${e.message}";
+    }
   }
 }

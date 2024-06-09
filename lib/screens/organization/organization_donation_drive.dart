@@ -1,46 +1,15 @@
 import 'package:flutter/material.dart';
-
-class DonationDrive {
-  final String name;
-  final String description;
-  final String startDate;
-  final String endDate;
-  final List<String> proofPhotos;
-
-  DonationDrive({
-    required this.name,
-    required this.description,
-    required this.startDate,
-    required this.endDate,
-    required this.proofPhotos,
-  });
-}
-
-// (replace with backend)
-List<DonationDrive> fetchDonationDrives() {
-  return [
-    DonationDrive(
-      name: 'Donation Drive 1',
-      description: 'Description of Donation Drive 1',
-      startDate: '2024-06-01',
-      endDate: '2024-06-30',
-      proofPhotos: ['image1', 'image2'],
-    ),
-    DonationDrive(
-      name: 'Donation Drive 2',
-      description: 'Description of Donation Drive 2',
-      startDate: '2024-07-01',
-      endDate: '2024-07-31',
-      proofPhotos: ['image1', 'image2'],
-    ),
-  ];
-}
+import 'package:provider/provider.dart';
+import '../../providers/donation_drive_provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../models/donation_drive_model.dart';
 
 class DonationDrivesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Fetch donation drive data from backend
-    List<DonationDrive> donationDrives = fetchDonationDrives();
+    DonationDriveListProvider donationDriveProvider =
+        Provider.of<DonationDriveListProvider>(context);
+    MyAuthProvider authProvider = Provider.of<MyAuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -57,57 +26,169 @@ class DonationDrivesScreen extends StatelessWidget {
                 prefixIcon: Icon(Icons.search),
               ),
               onChanged: (value) {
-                // Implement search functionality
+                donationDriveProvider.searchDonationDrives(value);
               },
             ),
           ),
           // Donation Drives List
           Expanded(
-            child: ListView.builder(
-              itemCount: donationDrives.length,
-              itemBuilder: (context, index) {
-                return DonationDriveItem(donationDrive: donationDrives[index]);
+            child: Consumer<DonationDriveListProvider>(
+              builder: (context, provider, child) {
+                var donationDrives = provider.donationDrives;
+                return ListView.builder(
+                  itemCount: donationDrives.length,
+                  itemBuilder: (context, index) {
+                    return DonationDriveItem(
+                      donationDrive: donationDrives[index],
+                      onEdit: () => _showDonationDriveDialog(
+                        context,
+                        authProvider,
+                        donationDriveProvider,
+                        donationDrive: donationDrives[index],
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to screen to add new donation drive
-        },
+        onPressed: () => _showDonationDriveDialog(
+            context, authProvider, donationDriveProvider),
         child: Icon(Icons.add),
       ),
+    );
+  }
+
+  void _showDonationDriveDialog(
+      BuildContext context,
+      MyAuthProvider authProvider,
+      DonationDriveListProvider donationDriveProvider,
+      {DonationDrive? donationDrive}) {
+    final _formKey = GlobalKey<FormState>();
+    final TextEditingController nameController =
+        TextEditingController(text: donationDrive?.name ?? '');
+    final TextEditingController descriptionController =
+        TextEditingController(text: donationDrive?.description ?? '');
+    final TextEditingController startDateController = TextEditingController(
+        text: donationDrive?.startDate.toIso8601String() ?? '');
+    final TextEditingController endDateController = TextEditingController(
+        text: donationDrive?.endDate.toIso8601String() ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(donationDrive == null
+              ? 'Add Donation Drive'
+              : 'Edit Donation Drive'),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(labelText: 'Name'),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Please enter a name' : null,
+                ),
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: InputDecoration(labelText: 'Description'),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Please enter a description' : null,
+                ),
+                TextFormField(
+                  controller: startDateController,
+                  decoration: InputDecoration(labelText: 'Start Date'),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Please enter a start date' : null,
+                ),
+                TextFormField(
+                  controller: endDateController,
+                  decoration: InputDecoration(labelText: 'End Date'),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Please enter an end date' : null,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  String email = authProvider.userObj!.email!;
+                  String? organizationId = await donationDriveProvider
+                      .getOrganizationIdByEmail(email);
+                  if (organizationId != null) {
+                    DonationDrive newDonationDrive = DonationDrive(
+                      id: donationDrive?.id,
+                      organizationId: organizationId,
+                      name: nameController.text,
+                      description: descriptionController.text,
+                      startDate: DateTime.parse(startDateController.text),
+                      endDate: DateTime.parse(endDateController.text),
+                      photos: donationDrive?.photos ?? [],
+                    );
+
+                    if (donationDrive == null) {
+                      donationDriveProvider.addDonationDrive(newDonationDrive);
+                    } else {
+                      donationDriveProvider.editDonationDrive(newDonationDrive);
+                    }
+
+                    Navigator.of(context).pop();
+                  }
+                }
+              },
+              child: Text(donationDrive == null ? 'Add' : 'Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
 class DonationDriveItem extends StatelessWidget {
   final DonationDrive donationDrive;
+  final VoidCallback onEdit;
 
-  DonationDriveItem({required this.donationDrive});
+  DonationDriveItem({required this.donationDrive, required this.onEdit});
 
   @override
   Widget build(BuildContext context) {
+    DonationDriveListProvider donationDriveProvider =
+        Provider.of<DonationDriveListProvider>(context);
+
     return Card(
       margin: EdgeInsets.all(8.0),
       child: ListTile(
         title: Text(donationDrive.name),
-        subtitle: Text('${donationDrive.startDate} - ${donationDrive.endDate}'),
+        subtitle: Text(
+            '${donationDrive.startDate.toIso8601String()} - ${donationDrive.endDate.toIso8601String()}'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () {},
+              onPressed: onEdit,
             ),
             IconButton(
               icon: Icon(Icons.delete),
-              onPressed: () {},
+              onPressed: () {
+                donationDriveProvider.deleteDonationDrive(donationDrive.id!);
+              },
             ),
           ],
         ),
-        onTap: () {},
       ),
     );
   }
