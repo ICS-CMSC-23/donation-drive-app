@@ -12,6 +12,7 @@ class Donation {
   final String contactNo;
   final int
       status; // 0 Pending, 1 Confirmed, 2 Scheduled for pick-up, 3 Complete, 4 Canceled
+  final int donorId;
 
   Donation(
       {required this.organizationId,
@@ -23,7 +24,8 @@ class Donation {
       required this.dateTime,
       required this.addresses,
       required this.contactNo,
-      required this.status});
+      required this.status,
+      required this.donorId});
 
   factory Donation.fromJson(Map<String, dynamic> json) {
     return Donation(
@@ -36,7 +38,8 @@ class Donation {
         dateTime: DateTime.parse(json['dateTime']),
         addresses: List<String>.from(json['addresses']),
         contactNo: json['contactNo'],
-        status: json['status']);
+        status: json['status'],
+        donorId: json['donorId']);
   }
 
   static List<Donation> fromJsonArray(String jsonData) {
@@ -54,7 +57,8 @@ class Donation {
       'dateTime': dateTime.toIso8601String(),
       'addresses': addresses,
       'contactNo': contactNo,
-      'status': status
+      'status': status,
+      'donorId': donorId
     };
   }
 }

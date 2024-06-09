@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../models/organization_model.dart';
 import '../../models/donation_model.dart';
 import '../../providers/donation_provider.dart';
+import '../../providers/donor_provider.dart';
+import '../../providers/auth_provider.dart';
 
 class DonationFormPage extends StatefulWidget {
   final Organization organization;
@@ -167,31 +169,33 @@ class _DonationFormPageState extends State<DonationFormPage> {
     final addressFields = Column(
       children: [
         for (var i = 0; i < addressesController.length; i++)
-          Row(children: [
-            Expanded(
-              child: TextFormField(
-                controller: addressesController[i],
-                decoration: InputDecoration(
-                  labelText: 'Address ${i + 1}',
-                  border: const OutlineInputBorder(),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: addressesController[i],
+                  decoration: InputDecoration(
+                    labelText: 'Address ${i + 1}',
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Address is required';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Address is required';
-                  }
-                  return null;
+              ),
+              IconButton(
+                icon: const Icon(Icons.remove),
+                onPressed: () {
+                  setState(() {
+                    addressesController.removeAt(i);
+                  });
                 },
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.remove),
-              onPressed: () {
-                setState(() {
-                  addressesController.removeAt(i);
-                });
-              },
-            ),
-          ]),
+            ],
+          ),
       ],
     );
 
@@ -207,9 +211,9 @@ class _DonationFormPageState extends State<DonationFormPage> {
           ),
         ),
       ),
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          _submitForm();
+          await _submitForm();
         }
       },
       child: const Text('Submit', style: TextStyle(color: Colors.white)),
@@ -255,7 +259,28 @@ class _DonationFormPageState extends State<DonationFormPage> {
     );
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
+    final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
+    final donorProvider =
+        Provider.of<DonorListProvider>(context, listen: false);
+
+    if (authProvider.userObj == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You need to be signed in to donate')),
+      );
+      return;
+    }
+
+    final donor =
+        await donorProvider.getDonorByEmail(authProvider.userObj!.email!);
+
+    if (donor == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Donor information not found')),
+      );
+      return;
+    }
+
     final donation = Donation(
       organizationId: widget.organization.userId,
       categories: [selectedCategory!],
@@ -265,7 +290,8 @@ class _DonationFormPageState extends State<DonationFormPage> {
       addresses:
           addressesController.map((controller) => controller.text).toList(),
       contactNo: contactNoController.text,
-      status: 0, // Assuming status 0 for new donation
+      status: 0,
+      donorId: donor.userId!, // Set the donorId
     );
 
     Provider.of<DonationListProvider>(context, listen: false)
