@@ -9,66 +9,78 @@ class ViewAllDonations extends StatelessWidget {
       backgroundColor:
           const Color.fromRGBO(48, 61, 78, 1), // Dark background color
       appBar: AppBar(
-        title: const Text('View All Donations'),
+        title: const Text(
+          'View All Donations',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white, // Making the AppBar title white and bold
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            _buildOrganizationCard("Organization 1", [
-              _buildDonationDetails(
-                "Donation 1 - Pending",
-                "Food",
-                "For pick-up",
-                "5kg",
-                "15th July, 09:00 AM",
-                "1234 Charity St., Nonprofit City",
-                "(123) 456-7890",
-              ),
-              _buildDonationDetails(
-                "Donation 2 - Complete",
-                "Clothes",
-                "For drop off",
-                "10kg",
-                "16th July, 10:00 AM",
-                "1235 Charity St., Nonprofit City",
-                "(123) 456-7891",
-              ),
-            ]),
-            const SizedBox(height: 20),
-            _buildOrganizationCard("Organization 2", [
-              _buildDonationDetails(
-                "Donation 1 - Scheduled for Pick-up",
-                "Cash",
-                "For pick-up",
-                "N/A",
-                "17th July, 11:00 AM",
-                "1236 Charity St., Nonprofit City",
-                "(123) 456-7892",
-              ),
-              _buildDonationDetails(
-                "Donation 2 - Confirmed",
-                "Necessities",
-                "For drop off",
-                "20kg",
-                "18th July, 12:00 PM",
-                "1237 Charity St., Nonprofit City",
-                "(123) 456-7893",
-              ),
-            ]),
-          ],
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildOrganizationCard(context, "Organization 1", [
+                  _buildDonationDetails(
+                    "Donation 1 - Pending",
+                    "Food",
+                    "For pick-up",
+                    "5kg",
+                    "15th July, 09:00 AM",
+                    "1234 Charity St., Nonprofit City",
+                    "(123) 456-7890",
+                  ),
+                  _buildDonationDetails(
+                    "Donation 2 - Complete",
+                    "Clothes",
+                    "For drop off",
+                    "10kg",
+                    "16th July, 10:00 AM",
+                    "1235 Charity St., Nonprofit City",
+                    "(123) 456-7891",
+                  ),
+                ]),
+                const SizedBox(height: 20),
+                _buildOrganizationCard(context, "Organization 2", [
+                  _buildDonationDetails(
+                    "Donation 1 - Scheduled for Pick-up",
+                    "Cash",
+                    "For pick-up",
+                    "N/A",
+                    "17th July, 11:00 AM",
+                    "1236 Charity St., Nonprofit City",
+                    "(123) 456-7892",
+                  ),
+                  _buildDonationDetails(
+                    "Donation 2 - Confirmed",
+                    "Necessities",
+                    "For drop off",
+                    "20kg",
+                    "18th July, 12:00 PM",
+                    "1237 Charity St., Nonprofit City",
+                    "(123) 456-7893",
+                  ),
+                ]),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildOrganizationCard(
-      String organizationName, List<Widget> donations) {
+      BuildContext context, String organizationName, List<Widget> donations) {
     return Card(
       color: Colors.white,
-      child: Padding(
+      child: Container(
+        width: MediaQuery.of(context).size.width *
+            0.9, // Fixed width to 90% of screen width
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
