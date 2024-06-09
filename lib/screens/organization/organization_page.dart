@@ -4,6 +4,7 @@ import '../../models/donation_model.dart';
 import '../../models/donor_model.dart';
 import '../../providers/donation_provider.dart';
 import '../../providers/donor_provider.dart';
+import '../../providers/auth_provider.dart'; // Import the auth provider
 import 'organization_profile.dart';
 import 'organization_donation.dart';
 import 'organization_donation_drive.dart'; // Import the new page
@@ -21,6 +22,8 @@ class _OrganizationPageState extends State<OrganizationPage> {
     // Fetch donation data from the provider
     final donationProvider = Provider.of<DonationListProvider>(context);
     final donorProvider = Provider.of<DonorListProvider>(context);
+    final authProvider =
+        Provider.of<MyAuthProvider>(context); // Get the auth provider
 
     return Scaffold(
       appBar: AppBar(
@@ -108,6 +111,15 @@ class _OrganizationPageState extends State<OrganizationPage> {
                   builder: (context) => DonationDrivesScreen(),
                 ),
               );
+            },
+          ),
+          const SizedBox(height: 16), // Add some space between the buttons
+          FloatingActionButton(
+            heroTag: 'signOutButton',
+            child: const Icon(Icons.exit_to_app),
+            onPressed: () async {
+              await authProvider.signOut();
+              Navigator.pop(context);
             },
           ),
         ],

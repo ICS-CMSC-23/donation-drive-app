@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/organization_provider.dart';
+import '../../providers/auth_provider.dart'; // Import the auth provider
 import 'donor_profile.dart';
 import 'donate_form.dart';
 import '../../models/organization_model.dart';
@@ -33,6 +34,9 @@ class _DonorPageState extends State<DonorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider =
+        Provider.of<MyAuthProvider>(context); // Get the auth provider
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Donor Homepage"),
@@ -73,14 +77,29 @@ class _DonorPageState extends State<DonorPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.account_circle),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => DonorProfile()),
-          );
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'profileButton',
+            child: const Icon(Icons.account_circle),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DonorProfile()),
+              );
+            },
+          ),
+          const SizedBox(height: 16), // Add some space between the buttons
+          FloatingActionButton(
+            heroTag: 'signOutButton',
+            child: const Icon(Icons.exit_to_app),
+            onPressed: () async {
+              await authProvider.signOut();
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
     );
   }
