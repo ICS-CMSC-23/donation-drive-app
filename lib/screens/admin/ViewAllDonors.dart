@@ -1,85 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project_jdvillamin/models/donor_model.dart'; // Ensure you have a Donor model
 
 class ViewAllDonors extends StatelessWidget {
-  const ViewAllDonors({super.key});
+  const ViewAllDonors({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("View All Donors"),
+        backgroundColor: Colors.blue, // Set your desired color
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildDonorSection(
-              "Donor 1",
-              [
-                _buildDonation("Organization 1", "Complete"),
-                _buildDonation("Organization 2", "Complete"),
-                _buildDonation("Organization 3", "Complete"),
-              ],
-            ),
-            const Divider(),
-            _buildDonorSection(
-              "Donor 2",
-              [
-                _buildDonation("Organization 1", "Complete"),
-                _buildDonation("Organization 2", "Complete"),
-                _buildDonation("Organization 3", "Complete"),
-              ],
-            ),
-            const Divider(),
-          ],
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('donors').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return ListView(
+              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                Map<String, dynamic> data =
+                    document.data()! as Map<String, dynamic>;
+                Donor donor = Donor.fromJson(data);
+                return _buildDonorSection(donor);
+              }).toList(),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildDonorSection(String donorName, List<Widget> donations) {
+  Widget _buildDonorSection(Donor donor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          donorName,
+          donor.name,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 10),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: donations,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDonation(String organizationName, String status) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          organizationName,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            decoration: TextDecoration.underline, // Add underline
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          "Donation 1 - $status",
-        ),
-        Text(
-          "Donation 2 - $status",
-        ),
-        Text(
-          "Donation 3 - $status",
-        ),
-        const SizedBox(height: 10),
+        Text("User ID: ${donor.userId}"),
+        Text("Username: ${donor.username}"),
+        ...donor.addresses.map((address) => Text("Address: $address")).toList(),
+        Text("Contact No: ${donor.contactNo}"),
+        const Divider(),
       ],
     );
   }
