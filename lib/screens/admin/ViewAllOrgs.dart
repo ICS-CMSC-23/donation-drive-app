@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project_jdvillamin/models/organization_model.dart'; // Make sure to import the Organization model
+import 'package:project_jdvillamin/models/organization_model.dart'; // Ensure you import the Organization model correctly
 
 class ViewAllOrgs extends StatelessWidget {
   const ViewAllOrgs({Key? key}) : super(key: key);
@@ -10,7 +10,13 @@ class ViewAllOrgs extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(46, 61, 78, 1),
       appBar: AppBar(
-        title: const Text("View All Organizations"),
+        title: const Text(
+          "View All Organizations",
+          style: TextStyle(
+            fontWeight: FontWeight.bold, // Bold text
+            color: Colors.white, // White text color
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -55,44 +61,49 @@ class ViewAllOrgs extends StatelessWidget {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text(
-              'About: ${org.about}',
-              style: const TextStyle(fontSize: 16),
-            ),
+            _buildBoldText('About:', org.about),
             SizedBox(height: 8),
-            Text(
-              'Address: ${org.addresses.join(", ")}',
-              style: const TextStyle(fontSize: 16),
-            ),
+            _buildBoldText('Address:', org.addresses.join(", ")),
             SizedBox(height: 8),
-            Text(
-              'Contact: ${org.contactNo}',
-              style: const TextStyle(fontSize: 16),
-            ),
+            _buildBoldText('Contact:', org.contactNo),
             SizedBox(height: 8),
-            Text(
-              'Proofs of Legitimacy: ${org.proofsOfLegitimacy.join(", ")}',
-              style: const TextStyle(fontSize: 16),
-            ),
+            _buildBoldText(
+                'Proofs of Legitimacy:', org.proofsOfLegitimacy.join(", ")),
             SizedBox(height: 8),
             Text(
               'Status: ${org.isApproved ? "Approved" : "Not Approved"}',
               style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                   color: org.isApproved ? Colors.green : Colors.red),
             ),
             SizedBox(height: 8),
-            Text(
-              'Open Status: ${org.isOpen ? "Open" : "Closed"}',
-              style: const TextStyle(fontSize: 16),
-            ),
+            _buildBoldText('Open Status:', org.isOpen ? "Open" : "Closed"),
             SizedBox(height: 8),
-            Text(
-              'Donation Drives: ${org.donationDriveIds.join(", ")}',
-              style: const TextStyle(fontSize: 16),
-            ),
+            _buildBoldText('Donation Drives:', org.donationDriveIds.join(", ")),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBoldText(String label, String? value) {
+    return RichText(
+      text: TextSpan(
+        style: const TextStyle(
+          color: Colors.black, // Default text color
+          fontSize: 18,
+        ),
+        children: [
+          TextSpan(
+            text: '$label ',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          TextSpan(
+            text: value ?? 'Not available', // Provide a default value if null
+            style: const TextStyle(fontWeight: FontWeight.normal),
+          ),
+        ],
       ),
     );
   }
