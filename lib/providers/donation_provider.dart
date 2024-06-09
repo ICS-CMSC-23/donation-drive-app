@@ -31,8 +31,7 @@ class DonationListProvider with ChangeNotifier {
   }
 
   void addDonation(Donation donation) async {
-    String message =
-        await firebaseService.addDonation(donation.toJson() as Donation);
+    String message = await firebaseService.addDonation(donation);
     print(message);
     notifyListeners();
   }

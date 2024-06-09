@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../models/organization_model.dart';
 import '../../models/donation_model.dart';
 import '../../providers/donation_provider.dart';
 import '../../providers/donor_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DonationFormPage extends StatefulWidget {
   final Organization organization;
@@ -31,6 +33,7 @@ class _DonationFormPageState extends State<DonationFormPage> {
   List<TextEditingController> addressesController = [TextEditingController()];
   TextEditingController contactNoController = TextEditingController();
   PlatformFile? pickedFile;
+  File? capturedImage;
   String? uploadedFileUrl;
 
   final categories = ['Food', 'Clothes', 'Cash', 'Necessities', 'Others'];
@@ -46,10 +49,41 @@ class _DonationFormPageState extends State<DonationFormPage> {
     }
   }
 
-  Future<String?> uploadFile() async {
-    if (pickedFile == null) return null;
+  Future<void> captureImage() async {
+    // Request camera and storage permissions
+    var status = await Permission.camera.status;
+    if (!status.isGranted) {
+      await Permission.camera.request();
+    }
 
-    final path = 'donations/${pickedFile!.name}';
+    var storageStatus = await Permission.storage.status;
+    if (!storageStatus.isGranted) {
+      await Permission.storage.request();
+    }
+
+    if (await Permission.camera.isGranted &&
+        await Permission.storage.isGranted) {
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(source: ImageSource.camera);
+
+      if (pickedImage != null) {
+        setState(() {
+          capturedImage = File(pickedImage.path);
+        });
+      }
+    } else {
+      // Handle the case when permissions are not granted
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Camera and storage permissions are required')),
+      );
+    }
+  }
+
+  Future<String?> uploadFile() async {
+    if (pickedFile == null && capturedImage == null) return null;
+
+    final path =
+        'donations/${pickedFile?.name ?? capturedImage!.path.split('/').last}';
     final ref = FirebaseStorage.instance.ref().child(path);
 
     if (kIsWeb) {
@@ -58,7 +92,8 @@ class _DonationFormPageState extends State<DonationFormPage> {
       final fileUrl = await snapshot.ref.getDownloadURL();
       return fileUrl;
     } else {
-      final file = File(pickedFile!.path!);
+      final file =
+          pickedFile != null ? File(pickedFile!.path!) : capturedImage!;
       final uploadTask = ref.putFile(file);
       final snapshot = await uploadTask.whenComplete(() => {});
       final fileUrl = await snapshot.ref.getDownloadURL();
@@ -241,7 +276,14 @@ class _DonationFormPageState extends State<DonationFormPage> {
       child: const Text('Select File'),
     );
 
-    final fileNameText = Text(pickedFile?.name ?? 'No file selected');
+    final cameraButton = ElevatedButton(
+      onPressed: captureImage,
+      child: const Text('Capture Image'),
+    );
+
+    final fileNameText = Text(pickedFile?.name ??
+        capturedImage?.path.split('/').last ??
+        'No file selected');
 
     final submitButton = ElevatedButton(
       style: ButtonStyle(
@@ -257,7 +299,7 @@ class _DonationFormPageState extends State<DonationFormPage> {
       ),
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          if (pickedFile != null) {
+          if (pickedFile != null || capturedImage != null) {
             uploadedFileUrl = await uploadFile();
           }
           await _submitForm();
@@ -297,6 +339,7 @@ class _DonationFormPageState extends State<DonationFormPage> {
                   contactNoField,
                   const SizedBox(height: 20),
                   filePickerButton,
+                  cameraButton,
                   fileNameText,
                   const SizedBox(height: 20),
                   submitButton,

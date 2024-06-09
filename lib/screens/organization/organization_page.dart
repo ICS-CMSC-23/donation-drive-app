@@ -146,7 +146,7 @@ class DonationCard extends StatefulWidget {
   });
 
   @override
-  _DonationCardState createState() => _DonationCardState();
+  State<DonationCard> createState() => _DonationCardState();
 }
 
 class _DonationCardState extends State<DonationCard> {
