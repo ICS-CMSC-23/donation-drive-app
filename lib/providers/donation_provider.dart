@@ -31,16 +31,21 @@ class DonationListProvider with ChangeNotifier {
   }
 
   void addDonation(Donation donation) async {
-    String message = await firebaseService.addDonation(donation.toJson());
+    String message =
+        await firebaseService.addDonation(donation.toJson() as Donation);
     print(message);
     notifyListeners();
   }
 
-  void editDonation() {
-    // TODO: fill edit donor
+  void editDonation(String id, Map<String, dynamic> data) async {
+    String message = await firebaseService.editDonation(id, data);
+    print(message);
+    notifyListeners();
   }
 
-  void deleteDonation() {
-    // TODO: fill delete donor
+  void deleteDonation(String id) async {
+    String message = await firebaseService.deleteDonation(id);
+    print(message);
+    notifyListeners();
   }
 }

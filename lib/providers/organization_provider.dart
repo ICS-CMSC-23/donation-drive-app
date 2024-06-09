@@ -10,14 +10,14 @@ class OrganizationListProvider with ChangeNotifier {
 
   OrganizationListProvider() {
     firebaseService = FirebaseOrganizationAPI();
-    fetchDonors();
+    fetchOrganizations();
   }
 
   Stream<QuerySnapshot> get organizations => _organizationStream;
 
   int get organizationCount => _organizationCount;
 
-  fetchDonors() {
+  fetchOrganizations() {
     _organizationStream = firebaseService.getAllOrganizations();
     _organizationStream.listen((snapshot) {
       _organizationCount = snapshot.docs.length;
@@ -37,11 +37,29 @@ class OrganizationListProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void editOrganization() {
-    // TODO: fill edit donor
+  Future<Organization?> getOrganizationByUsername(String username) {
+    return firebaseService.getOrganizationByUsername(username);
+  }
+
+  Future<String?> getDocumentIdByUsername(String username) async {
+    final QuerySnapshot result = await FirebaseOrganizationAPI.db
+        .collection('organizations')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+    if (result.docs.isNotEmpty) {
+      return result.docs.first.id;
+    }
+    return null;
+  }
+
+  void editOrganization(String? id, Map<String, dynamic> data) async {
+    String message = await firebaseService.editOrganization(id, data);
+    print(message);
+    notifyListeners();
   }
 
   void deleteOrganization() {
-    // TODO: fill delete donor
+    // TODO: fill delete organization
   }
 }
