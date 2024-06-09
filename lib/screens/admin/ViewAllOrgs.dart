@@ -47,46 +47,6 @@ class ViewAllOrgs extends StatelessWidget {
     );
   }
 
-  Widget _buildOrganizationCard(Organization org) {
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.only(bottom: 20),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              org.organizationName,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            _buildBoldText('About:', org.about),
-            SizedBox(height: 8),
-            _buildBoldText('Address:', org.addresses.join(", ")),
-            SizedBox(height: 8),
-            _buildBoldText('Contact:', org.contactNo),
-            SizedBox(height: 8),
-            _buildBoldText(
-                'Proofs of Legitimacy:', org.proofsOfLegitimacy.join(", ")),
-            SizedBox(height: 8),
-            Text(
-              'Status: ${org.isApproved ? "Approved" : "Not Approved"}',
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: org.isApproved ? Colors.green : Colors.red),
-            ),
-            SizedBox(height: 8),
-            _buildBoldText('Open Status:', org.isOpen ? "Open" : "Closed"),
-            SizedBox(height: 8),
-            _buildBoldText('Donation Drives:', org.donationDriveIds.join(", ")),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildBoldText(String label, String? value) {
     return RichText(
       text: TextSpan(
@@ -104,6 +64,76 @@ class ViewAllOrgs extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.normal),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAddressText(String label, List<String> addresses) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$label',
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        ...addresses
+            .map((address) => Text(address,
+                style: const TextStyle(fontSize: 16, color: Colors.black)))
+            .toList(),
+      ],
+    );
+  }
+
+  Widget _buildStatusText(String label, bool isApproved) {
+    return Row(
+      children: [
+        Text(
+          '$label ',
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        Text(
+          isApproved ? "Approved" : "Not Approved",
+          style: TextStyle(
+            fontSize: 18,
+            color: isApproved ? Colors.green : Colors.red,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOrganizationCard(Organization org) {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.only(bottom: 20),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              org.organizationName,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            _buildBoldText('About:', org.about),
+            SizedBox(height: 8),
+            _buildAddressText('Address:', org.addresses),
+            SizedBox(height: 8),
+            _buildBoldText('Contact Number:', org.contactNo),
+            SizedBox(height: 8),
+            _buildBoldText(
+                'Proofs of Legitimacy:', org.proofsOfLegitimacy.join(", ")),
+            SizedBox(height: 8),
+            _buildStatusText('Status:', org.isApproved),
+            SizedBox(height: 8),
+            _buildBoldText('Open Status:', org.isOpen ? "Open" : "Closed"),
+            SizedBox(height: 8),
+            _buildBoldText('Donation Drives:', org.donationDriveIds.join(", ")),
+          ],
+        ),
       ),
     );
   }
