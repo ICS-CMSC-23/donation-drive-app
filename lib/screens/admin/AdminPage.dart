@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'ApproveOrg.dart';
 import 'ViewAllDonors.dart';
-import 'ViewAllOrgs.dart';
+import 'admin_view_all_orgs.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({super.key});

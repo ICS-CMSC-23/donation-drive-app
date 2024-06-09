@@ -151,11 +151,20 @@ class DonationCard extends StatefulWidget {
 
 class _DonationCardState extends State<DonationCard> {
   String? selectedDriveId;
+  int selectedStatus = 0;
+  List<String> statusLabels = [
+    "Pending",
+    "Confirmed",
+    "Schedule for Pick-up",
+    "Complete",
+    "Canceled"
+  ];
 
   @override
   void initState() {
     super.initState();
     selectedDriveId = widget.donation.donationDriveId;
+    selectedStatus = widget.donation.status;
   }
 
   @override
@@ -195,6 +204,27 @@ class _DonationCardState extends State<DonationCard> {
                     Provider.of<DonationListProvider>(context, listen: false);
                 donationProvider.editDonation(
                     widget.donation.id!, {'donationDriveId': newValue});
+              },
+            ),
+            DropdownButton<int>(
+              hint: const Text("Select Status"),
+              value: selectedStatus,
+              items: List.generate(statusLabels.length, (index) {
+                return DropdownMenuItem<int>(
+                  value: index,
+                  child: Text(statusLabels[index]),
+                );
+              }),
+              onChanged: (newValue) async {
+                setState(() {
+                  selectedStatus = newValue!;
+                });
+
+                // Update the donation with the selected status
+                final donationProvider =
+                    Provider.of<DonationListProvider>(context, listen: false);
+                donationProvider
+                    .editDonation(widget.donation.id!, {'status': newValue});
               },
             ),
           ],
