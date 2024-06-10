@@ -72,7 +72,8 @@ class _DonationFormPageState extends State<DonationFormPage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Camera and storage permissions are required')),
+        const SnackBar(
+            content: Text('Camera and storage permissions are required')),
       );
     }
   }
@@ -220,53 +221,99 @@ class _DonationFormPageState extends State<DonationFormPage> {
     );
 
     final addAddressButton = ElevatedButton(
+      style: ButtonStyle(
+        foregroundColor: const MaterialStatePropertyAll<Color>(
+            Color.fromRGBO(255, 63, 64, 1)), // Set the icon/text color
+        side: const MaterialStatePropertyAll<BorderSide>(BorderSide(
+                color: Color.fromRGBO(255, 63, 64, 1),
+                width: 2.0) // Outline color
+            ),
+        shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.0),
+          ),
+        ),
+      ),
       onPressed: () {
         setState(() {
           addressesController.add(TextEditingController());
         });
       },
-      child: const Text("Add Address"),
+      child: const Text('ADD ADDRESS',
+          style: TextStyle(fontWeight: FontWeight.bold)),
     );
 
     final addressFields = Column(
       children: [
         for (var i = 0; i < addressesController.length; i++)
-          Row(
+          Column(
             children: [
-              Expanded(
-                child: TextFormField(
-                  controller: addressesController[i],
-                  decoration: InputDecoration(
-                    labelText: 'Address ${i + 1}',
-                    border: const OutlineInputBorder(),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: addressesController[i],
+                      decoration: InputDecoration(
+                        labelText: 'Address ${i + 1}',
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Address is required';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Address is required';
-                    }
-                    return null;
-                  },
-                ),
+                  IconButton(
+                    color: const Color.fromRGBO(255, 63, 64, 1),
+                    icon: const Icon(Icons.playlist_remove_rounded),
+                    onPressed: () {
+                      setState(() {
+                        addressesController.removeAt(i);
+                      });
+                    },
+                  ),
+                ],
               ),
-              IconButton(
-                icon: const Icon(Icons.remove),
-                onPressed: () {
-                  setState(() {
-                    addressesController.removeAt(i);
-                  });
-                },
-              ),
+              const SizedBox(height: 10),
             ],
-          ),
+          )
       ],
     );
 
     final filePickerButton = ElevatedButton(
+      style: ButtonStyle(
+        foregroundColor: const MaterialStatePropertyAll<Color>(
+            Color.fromRGBO(255, 63, 64, 1)), // Set the icon/text color
+        side: const MaterialStatePropertyAll<BorderSide>(BorderSide(
+                color: Color.fromRGBO(255, 63, 64, 1),
+                width: 2.0) // Outline color
+            ),
+        shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.0),
+          ),
+        ),
+      ),
       onPressed: selectFile,
       child: const Text('Select File'),
     );
 
     final cameraButton = ElevatedButton(
+      style: ButtonStyle(
+        foregroundColor: const MaterialStatePropertyAll<Color>(
+            Color.fromRGBO(255, 63, 64, 1)), // Set the icon/text color
+        side: const MaterialStatePropertyAll<BorderSide>(BorderSide(
+                color: Color.fromRGBO(255, 63, 64, 1),
+                width: 2.0) // Outline color
+            ),
+        shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.0),
+          ),
+        ),
+      ),
       onPressed: captureImage,
       child: const Text('Capture Image'),
     );
@@ -277,13 +324,13 @@ class _DonationFormPageState extends State<DonationFormPage> {
 
     final submitButton = ElevatedButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(
-            const Color.fromARGB(255, 38, 32, 69)),
+        backgroundColor: const MaterialStatePropertyAll<Color>(
+            Color.fromRGBO(255, 63, 64, 1)),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18.0),
             side: const BorderSide(
-                color: Color.fromARGB(255, 38, 32, 69), width: 2.0),
+                color: Color.fromRGBO(255, 63, 64, 1), width: 2.0),
           ),
         ),
       ),
@@ -299,44 +346,60 @@ class _DonationFormPageState extends State<DonationFormPage> {
     );
 
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
         title: Text(
           "Donation Form - ${widget.organization.organizationName}",
-          style: const TextStyle(fontSize: 25),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 25, fontWeight: FontWeight.bold, // Bold text
+            color: Colors.white, // White text color
+          ),
         ),
       ),
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Center(
           child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  categoryField,
-                  const SizedBox(height: 10),
-                  optionField,
-                  const SizedBox(height: 10),
-                  weightField,
-                  const SizedBox(height: 10),
-                  dateField,
-                  const SizedBox(height: 10),
-                  addressFields,
-                  addAddressButton,
-                  const SizedBox(height: 10),
-                  contactNoField,
-                  const SizedBox(height: 20),
-                  filePickerButton,
-                  cameraButton,
-                  fileNameText,
-                  const SizedBox(height: 20),
-                  submitButton,
-                ],
-              ),
-            ),
-          ),
+              key: _formKey,
+              child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          categoryField,
+                          const SizedBox(height: 10),
+                          optionField,
+                          const SizedBox(height: 10),
+                          weightField,
+                          const SizedBox(height: 10),
+                          dateField,
+                          const SizedBox(height: 10),
+                          addressFields,
+                          const SizedBox(height: 10),
+                          addAddressButton,
+                          const SizedBox(height: 10),
+                          contactNoField,
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(child: filePickerButton),
+                              const SizedBox(width: 10),
+                              Expanded(child: cameraButton),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          fileNameText,
+                          const SizedBox(height: 20),
+                          submitButton,
+                        ],
+                      ),
+                    ),
+                  ))),
         ),
       ),
     );
