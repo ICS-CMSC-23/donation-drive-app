@@ -161,6 +161,7 @@ class DonorPage extends StatelessWidget {
             onTap: () async {
               await authProvider.signOut();
               Navigator.pop(context);
+              Navigator.pop(context);
             },
           ),
         ],

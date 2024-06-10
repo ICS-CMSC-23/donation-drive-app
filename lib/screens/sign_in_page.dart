@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:project_jdvillamin/screens/test/donor_page.dart';
+import 'donor/donor_page.dart';
 import '../providers/organization_provider.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
