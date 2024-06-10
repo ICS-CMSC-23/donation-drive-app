@@ -76,64 +76,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   }
 
   Future<void> _handleScannedData(String scannedData) async {
-    try {
       // Fetch the donation details
       final donationProvider = Provider.of<DonationListProvider>(context, listen: false);
-      QuerySnapshot donationSnapshot = await donationProvider.donations.first;
-      final donationDoc = donationSnapshot.docs.firstWhere(
-        (doc) => doc.id == scannedData,
-        // ignore: cast_from_null_always_fails
-        orElse: () => null as QueryDocumentSnapshot<Object?>,
-      );
-
-      Donation donation = Donation.fromJson(donationDoc.data() as Map<String, dynamic>);
-
-      // Check if the donation is pending
-      if (donation.status == 0) {
-        // Get the current user's email
-        final currentUserEmail = Provider.of<MyAuthProvider>(context, listen: false).currentUser?.email;
-
-        // Query the Firestore collection of organizations
-        final organizationSnapshot = await FirebaseFirestore.instance
-            .collection('organizations')
-            .where('username', isEqualTo: currentUserEmail)
-            .get();
-
-        // Check if an organization document is found
-        if (organizationSnapshot.docs.isNotEmpty) {
-          // Retrieve the organization's user ID
-          final organizationUserId = organizationSnapshot.docs.first['userId'];
-
-          // Compare the organization's user ID with the donation's organization ID
-          if (donation.organizationId == organizationUserId) {
-            // The donation is valid and the organization IDs match
-            // Update the donation status to confirmed
-            donationProvider.editDonation(donation.id!, {'status': 1});
-            _showConfirmationDialog(context);
-
-            setState(() {
-              message = 'Donation confirmed';
-            });
-          } else {
-            setState(() {
-              message = 'User ID does not match the donation\'s organization ID';
-            });
-          }
-        } else {
-          setState(() {
-            message = 'Organization not found for the current user';
-          });
-        }
-      } else {
-        setState(() {
-          message = 'Donation is not pending';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        message = 'Error occurred while processing the QR code';
-      });
-    }
+      donationProvider.editDonation(scannedData, {"status":3});  
   }
 
   void _showConfirmationDialog(BuildContext context) {
@@ -146,8 +91,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                Navigator.of(context).pop(); // Navigate back to the organization page
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
               child: const Text('OK'),
             ),
