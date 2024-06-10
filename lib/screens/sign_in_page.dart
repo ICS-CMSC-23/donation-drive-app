@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'organization/organization_page.dart';
 import '../models/organization_model.dart';
+import 'admin/admin_menu.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -76,7 +77,11 @@ class _SignInPageState extends State<SignInPage> {
                   emailController.text.trim(),
                   passwordController.text.trim(),
                 );
-            if (result == 'donor') {
+
+            if (result == 'admin') {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const AdminPage()));
+            } else if (result == 'donor') {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const DonorPage()),

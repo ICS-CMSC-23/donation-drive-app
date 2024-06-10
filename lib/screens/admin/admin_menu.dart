@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'admin_view_all_donors.dart';
 import 'admin_view_all_orgs.dart';
 import 'admin_view_all_donations.dart';
+import '../../providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    MyAuthProvider authProvider = Provider.of<MyAuthProvider>(context);
     return Scaffold(
       backgroundColor:
           const Color.fromRGBO(46, 61, 78, 1), // Dark background color
@@ -108,6 +111,14 @@ class AdminPage extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
+                  ),
+                  FloatingActionButton(
+                    heroTag: 'signOutButton',
+                    child: const Icon(Icons.exit_to_app),
+                    onPressed: () async {
+                      await authProvider.signOut();
+                      Navigator.pop(context);
+                    },
                   ),
                 ],
               ),
