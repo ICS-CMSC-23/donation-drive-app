@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -18,17 +19,34 @@ class DonationDrivesScreen extends StatelessWidget {
     MyAuthProvider authProvider = Provider.of<MyAuthProvider>(context);
 
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
       appBar: AppBar(
-        title: const Text('Donation Drives'),
+        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
+        title: const Text(
+          'Donation Drives',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 25, fontWeight: FontWeight.bold, // Bold text
+            color: Colors.white, // White text color
+          ),
+        ),
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Search by donation drive name',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
+                filled: true, // Enable the fill color for the text field
+                fillColor: Colors.white, // Set the fill color to white
+                border: OutlineInputBorder(
+                  // Optionally add a border
+                  borderSide: BorderSide.none, // Removes the underline border
+                  borderRadius:
+                      BorderRadius.circular(8), // Adds rounded corners
+                ),
               ),
               onChanged: (value) {
                 donationDriveProvider.searchDonationDrives(value);

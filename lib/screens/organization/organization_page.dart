@@ -28,8 +28,17 @@ class _OrganizationPageState extends State<OrganizationPage> {
     final authProvider = Provider.of<MyAuthProvider>(context);
 
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
       appBar: AppBar(
-        title: const Text('Organization Homepage'),
+        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
+        title: const Text(
+          'Organization Homepage',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 25, fontWeight: FontWeight.bold, // Bold text
+            color: Colors.white, // White text color
+          ),
+        ),
       ),
       body: StreamBuilder(
         stream: donationProvider.donations,
