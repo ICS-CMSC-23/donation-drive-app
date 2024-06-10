@@ -10,11 +10,10 @@ import '../../providers/auth_provider.dart';
 import 'organization_profile.dart';
 import 'organization_donation.dart';
 import 'organization_donation_drive.dart';
-import 'package:telephony/telephony.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'qrscanner_page.dart';
 
 class OrganizationPage extends StatefulWidget {
-  const OrganizationPage({super.key});
+  const OrganizationPage({Key? key});
 
   @override
   State<OrganizationPage> createState() => _OrganizationPageState();
@@ -30,17 +29,8 @@ class _OrganizationPageState extends State<OrganizationPage> {
     final authProvider = Provider.of<MyAuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
-        title: const Text(
-          'Organization Homepage',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 25, fontWeight: FontWeight.bold, // Bold text
-            color: Colors.white, // White text color
-          ),
-        ),
+        title: const Text('Organization Homepage'),
       ),
       body: StreamBuilder(
         stream: donationProvider.donations,
@@ -80,8 +70,16 @@ class _OrganizationPageState extends State<OrganizationPage> {
                 itemCount: donations.length,
                 itemBuilder: (context, index) {
                   Donation donation = donations[index];
-                  Donor? donor = donors
-                      .firstWhere((donor) => donor.userId == donation.donorId);
+                  Donor? donor = donors.firstWhere(
+                      (donor) => donor.userId == donation.donorId,
+                      orElse: () => Donor(
+                          userId: null,
+                          id: null,
+                          name: 'Unknown',
+                          username: 'Unknown',
+                          password: 'Unknown',
+                          addresses: [],
+                          contactNo: 'Unknown'));
 
                   return DonationCard(
                       donor: donor,
@@ -130,6 +128,19 @@ class _OrganizationPageState extends State<OrganizationPage> {
               Navigator.pop(context);
             },
           ),
+          const SizedBox(height: 16),
+          FloatingActionButton(
+            heroTag: 'qrScannerButton',
+            child: const Icon(Icons.qr_code),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QRScannerScreen(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -142,14 +153,14 @@ class DonationCard extends StatefulWidget {
   final List<DonationDrive> donationDrives;
 
   const DonationCard({
-    super.key,
+    Key? key,
     required this.donor,
     required this.donation,
     required this.donationDrives,
-  });
+  }) : super(key: key);
 
   @override
-  State<DonationCard> createState() => _DonationCardState();
+  _DonationCardState createState() => _DonationCardState();
 }
 
 class _DonationCardState extends State<DonationCard> {
@@ -162,7 +173,6 @@ class _DonationCardState extends State<DonationCard> {
     "Complete",
     "Canceled"
   ];
-  final Telephony telephony = Telephony.instance;
 
   @override
   void initState() {
@@ -203,33 +213,6 @@ class _DonationCardState extends State<DonationCard> {
                   selectedDriveId = newValue;
                 });
 
-                List<DonationDrive> donationDrivesAll =
-                    context.read<DonationDriveListProvider>().donationDrives;
-
-                // Get the donation drive with the selected id newValue
-                DonationDrive selectedDonationDrive = donationDrivesAll
-                    .firstWhere((drive) => drive.id == newValue);
-
-                var status = await Permission.sms.status;
-                if (!status.isGranted) {
-                  await Permission.sms.request();
-                }
-
-                print('+63${widget.donor.contactNo.substring(1)}');
-
-                if (await Permission.sms.isGranted) {
-                  Telephony.instance.sendSms(
-                    to: '+63${widget.donor.contactNo.substring(1)}',
-                    message: "Sent to ${selectedDonationDrive.name}.",
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'SMS permission is required to send a message.')),
-                  );
-                }
-
                 // Update the donation with the selected donation drive ID
                 final donationProvider =
                     Provider.of<DonationListProvider>(context, listen: false);
@@ -250,25 +233,6 @@ class _DonationCardState extends State<DonationCard> {
                 setState(() {
                   selectedStatus = newValue!;
                 });
-
-                var status = await Permission.sms.status;
-                if (!status.isGranted) {
-                  await Permission.sms.request();
-                }
-
-                if (await Permission.sms.isGranted) {
-                  Telephony.instance.sendSms(
-                    to: '+63${widget.donor.contactNo.substring(1)}',
-                    message:
-                        "Updated your donation with ID: ${widget.donation.id} to status: ${newValue}.",
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'SMS permission is required to send a message.')),
-                  );
-                }
 
                 // Update the donation with the selected status
                 final donationProvider =
