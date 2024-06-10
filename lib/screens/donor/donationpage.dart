@@ -56,8 +56,17 @@ class DonationHistoryPage extends StatelessWidget {
     final String uid = user.email!;
 
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
       appBar: AppBar(
-        title: const Text("Donation History"),
+        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
+        title: const Text(
+          "Donation History",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 25, fontWeight: FontWeight.bold, // Bold text
+            color: Colors.white, // White text color
+          ),
+        ),
       ),
       body: FutureBuilder<int?>(
         future: fetchDonorId(uid),
@@ -84,11 +93,12 @@ class DonationHistoryPage extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        childAspectRatio: 1.17,
+                        childAspectRatio: (1 / 1.2),
                       ),
                       itemCount: donations.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -97,51 +107,51 @@ class DonationHistoryPage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => DonationDetailPage(donation: donations[index]),
+                                builder: (context) => DonationDetailPage(
+                                    donation: donations[index]),
                               ),
                             );
                           },
                           child: Card(
                             elevation: 4,
-                            child: Container(
-                              height: 800,
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      donations[index].categories.join(", "),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    donations[index].categories.join(", "),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      "Weight: ${donations[index].weight} kg",
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                      ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    "Weight: ${donations[index].weight} kg",
+                                    style: const TextStyle(
+                                      fontSize: 14,
                                     ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      "Date: ${donations[index].dateTime.toLocal().toString().split(' ')[0]}",
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                      ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    "Date: ${donations[index].dateTime.toLocal().toString().split(' ')[0]}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
                                     ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      donations[index].isPickup ? "Pickup" : "Dropoff",
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                      ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    donations[index].isPickup
+                                        ? "Pickup"
+                                        : "Dropoff",
+                                    style: const TextStyle(
+                                      fontSize: 14,
                                     ),
-                                    const SizedBox(height: 10),
-                                    _buildStatusWidget(donations[index].status),
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  _buildStatusWidget(donations[index].status),
+                                ],
                               ),
                             ),
                           ),
@@ -181,15 +191,14 @@ class DonationHistoryPage extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets
-      .symmetric(vertical: 5, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: BoxDecoration(
         color: statusColor,
         borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         "Status: ${_getStatusText(status)}",
-        style: TextStyle(color: Colors.black),
+        style: const TextStyle(color: Colors.black),
       ),
     );
   }
