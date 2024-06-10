@@ -26,7 +26,7 @@ class DonationFormPage extends StatefulWidget {
 class _DonationFormPageState extends State<DonationFormPage> {
   final _formKey = GlobalKey<FormState>();
 
-  String? selectedCategory;
+  List<String> selectedCategories = [];
   String? selectedOption;
   TextEditingController weightController = TextEditingController();
   TextEditingController dateController = TextEditingController();
@@ -50,7 +50,6 @@ class _DonationFormPageState extends State<DonationFormPage> {
   }
 
   Future<void> captureImage() async {
-    // Request camera and storage permissions
     var status = await Permission.camera.status;
     if (!status.isGranted) {
       await Permission.camera.request();
@@ -72,7 +71,6 @@ class _DonationFormPageState extends State<DonationFormPage> {
         });
       }
     } else {
-      // Handle the case when permissions are not granted
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Camera and storage permissions are required')),
       );
@@ -103,29 +101,22 @@ class _DonationFormPageState extends State<DonationFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryField = DropdownButtonFormField<String>(
-      value: selectedCategory,
-      decoration: const InputDecoration(
-        labelText: 'Category',
-        border: OutlineInputBorder(),
-      ),
-      items: categories.map((String category) {
-        return DropdownMenuItem<String>(
-          value: category,
-          child: Text(category),
+    final categoryField = Column(
+      children: categories.map((String category) {
+        return CheckboxListTile(
+          title: Text(category),
+          value: selectedCategories.contains(category),
+          onChanged: (bool? value) {
+            setState(() {
+              if (value == true) {
+                selectedCategories.add(category);
+              } else {
+                selectedCategories.remove(category);
+              }
+            });
+          },
         );
       }).toList(),
-      onChanged: (newValue) {
-        setState(() {
-          selectedCategory = newValue;
-        });
-      },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please select a category';
-        }
-        return null;
-      },
     );
 
     final optionField = DropdownButtonFormField<String>(
@@ -186,7 +177,6 @@ class _DonationFormPageState extends State<DonationFormPage> {
           lastDate: DateTime(2101),
         );
         if (pickedDate != null) {
-          // ignore: use_build_context_synchronously
           final TimeOfDay? pickedTime = await showTimePicker(
             context: context,
             initialTime: TimeOfDay.now(),
@@ -376,7 +366,7 @@ class _DonationFormPageState extends State<DonationFormPage> {
 
     final donation = Donation(
       organizationId: widget.organization.userId,
-      categories: [selectedCategory!],
+      categories: selectedCategories,
       isPickup: selectedOption == 'Pickup',
       weight: double.parse(weightController.text),
       dateTime: DateTime.parse(dateController.text),
