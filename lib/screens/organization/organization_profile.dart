@@ -71,42 +71,70 @@ class _OrganizationProfileScreenState extends State<OrganizationProfileScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Organization Profile'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Organization Name:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        appBar: AppBar(
+          backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
+          title: const Text(
+            'Organization Profile',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 25, fontWeight: FontWeight.bold, // Bold text
+              color: Colors.white, // White text color
             ),
-            Text(_organization!.organizationName),
-            SizedBox(height: 20),
-            Text(
-              'About the Organization:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(_organization!.about ?? 'No description available'),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Status for Donations:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Switch(
-                  value: _donationStatus,
-                  onChanged: _toggleDonationStatus,
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
-      ),
-    );
+        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
+        body: Center(
+            child: Container(
+                height: MediaQuery.of(context).size.height,
+                alignment: Alignment.center,
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Organization Name:',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Text(_organization!.organizationName),
+                              SizedBox(height: 20),
+                              Text(
+                                'About the Organization:',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Text(_organization!.about ??
+                                  'No description available'),
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Status for Donations:',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Switch(
+                                    value: _donationStatus,
+                                    onChanged: _toggleDonationStatus,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ]))));
   }
 }
