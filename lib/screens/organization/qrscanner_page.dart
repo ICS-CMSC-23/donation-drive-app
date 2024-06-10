@@ -109,7 +109,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   void _acceptDonation() {
     // Handle accepting the donation
-    final donationProvider = Provider.of<DonationListProvider>(context, listen: false);
+    final donationProvider =
+        Provider.of<DonationListProvider>(context, listen: false);
     donationProvider.editDonation(scannedData!, {"status": 3});
     setState(() {
       message = 'Donation accepted';
@@ -118,7 +119,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   void _rejectDonation() {
     // Handle rejecting the donation
-    final donationProvider = Provider.of<DonationListProvider>(context, listen: false);
+    final donationProvider =
+        Provider.of<DonationListProvider>(context, listen: false);
     donationProvider.editDonation(scannedData!, {"status": 5});
     setState(() {
       message = 'Donation rejected';

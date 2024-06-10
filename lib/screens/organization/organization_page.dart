@@ -11,6 +11,8 @@ import 'organization_profile.dart';
 import 'organization_donation.dart';
 import 'organization_donation_drive.dart';
 import 'qrscanner_page.dart';
+import 'package:telephony/telephony.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class OrganizationPage extends StatefulWidget {
   const OrganizationPage({Key? key});
@@ -213,6 +215,33 @@ class _DonationCardState extends State<DonationCard> {
                   selectedDriveId = newValue;
                 });
 
+                List<DonationDrive> donationDrivesAll =
+                    context.read<DonationDriveListProvider>().donationDrives;
+
+                // Get the donation drive with the selected id newValue
+                DonationDrive selectedDonationDrive = donationDrivesAll
+                    .firstWhere((drive) => drive.id == newValue);
+
+                var status = await Permission.sms.status;
+                if (!status.isGranted) {
+                  await Permission.sms.request();
+                }
+
+                print('+63${widget.donor.contactNo.substring(1)}');
+
+                if (await Permission.sms.isGranted) {
+                  Telephony.instance.sendSms(
+                    to: '+63${widget.donor.contactNo.substring(1)}',
+                    message: "Sent to ${selectedDonationDrive.name}.",
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                            'SMS permission is required to send a message.')),
+                  );
+                }
+
                 // Update the donation with the selected donation drive ID
                 final donationProvider =
                     Provider.of<DonationListProvider>(context, listen: false);
@@ -233,6 +262,25 @@ class _DonationCardState extends State<DonationCard> {
                 setState(() {
                   selectedStatus = newValue!;
                 });
+
+                var status = await Permission.sms.status;
+                if (!status.isGranted) {
+                  await Permission.sms.request();
+                }
+
+                if (await Permission.sms.isGranted) {
+                  Telephony.instance.sendSms(
+                    to: '+63${widget.donor.contactNo.substring(1)}',
+                    message:
+                        "Updated your donation with ID: ${widget.donation.id} to status: ${newValue}.",
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                            'SMS permission is required to send a message.')),
+                  );
+                }
 
                 // Update the donation with the selected status
                 final donationProvider =
