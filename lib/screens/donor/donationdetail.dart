@@ -43,8 +43,9 @@ class DonationDetailPage extends StatelessWidget {
             // Add condition to check if it's dropoff and pending
             if (!donation.isPickup && donation.status == 0)
               Container(
+                alignment: Alignment.center,
                 child: QrImageView(
-                  data: '12345',
+                  data: donation.id ?? 'unknown', // Provide a fallback value
                   version: QrVersions.auto,
                   size: 200.0,
                 ),
@@ -54,8 +55,6 @@ class DonationDetailPage extends StatelessWidget {
       ),
     );
   }
-}
-
 
   String _getStatusText(int status) {
     // Define status text based on status code
@@ -74,4 +73,4 @@ class DonationDetailPage extends StatelessWidget {
         return "Unknown";
     }
   }
-
+}
