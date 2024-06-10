@@ -250,6 +250,25 @@ class _DonationCardState extends State<DonationCard> {
                   selectedStatus = newValue!;
                 });
 
+                var status = await Permission.sms.status;
+                if (!status.isGranted) {
+                  await Permission.sms.request();
+                }
+
+                if (await Permission.sms.isGranted) {
+                  Telephony.instance.sendSms(
+                    to: '+63${widget.donor.contactNo.substring(1)}',
+                    message:
+                        "Updated your donation with ID: ${widget.donation.id} to status: ${newValue}.",
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                            'SMS permission is required to send a message.')),
+                  );
+                }
+
                 // Update the donation with the selected status
                 final donationProvider =
                     Provider.of<DonationListProvider>(context, listen: false);
