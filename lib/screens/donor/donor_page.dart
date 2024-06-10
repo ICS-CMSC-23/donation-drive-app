@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../../providers/organization_provider.dart';
@@ -15,8 +16,17 @@ class DonorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
       appBar: AppBar(
-        title: const Text("Donor Homepage"),
+        backgroundColor: const Color.fromRGBO(48, 61, 78, 1),
+        title: const Text(
+          "Donor Homepage",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 25, fontWeight: FontWeight.bold, // Bold text
+            color: Colors.white, // White text color
+          ),
+        ),
       ),
       drawer: _buildDrawer(context),
       body: Stack(
@@ -221,49 +231,76 @@ class DonorPage extends StatelessWidget {
                 ),
                 Center(
                   child: Material(
-                    color: Colors.transparent,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * .75,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            organization.organizationName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                      color: Colors.transparent,
+                      child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height * 0.8),
+                          child: SingleChildScrollView(
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * .75,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    organization.organizationName,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 15),
+                                  _buildDetailBox('Address',
+                                      organization.addresses.join(", ")),
+                                  const SizedBox(height: 10),
+                                  _buildDetailBox(
+                                      'Contact Number', organization.contactNo),
+                                  const SizedBox(height: 10),
+                                  _buildDetailBox(
+                                      'About',
+                                      organization.about ??
+                                          "No description available"),
+                                  const SizedBox(height: 20),
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          const MaterialStatePropertyAll<Color>(
+                                              Color.fromRGBO(255, 63, 64, 1)),
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(18.0),
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  255, 63, 64, 1),
+                                              width: 2.0),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: organization.isOpen
+                                        ? () {
+                                            onApprove();
+                                            removeOverlayAndDispose();
+                                          }
+                                        : null,
+                                    child: const Text(
+                                        'Select this organization',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)),
+                                  ),
+                                ],
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 15),
-                          _buildDetailBox(
-                              'Address', organization.addresses.join(", ")),
-                          const SizedBox(height: 10),
-                          _buildDetailBox(
-                              'Contact Number', organization.contactNo),
-                          const SizedBox(height: 10),
-                          _buildDetailBox('About',
-                              organization.about ?? "No description available"),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: organization.isOpen
-                                ? () {
-                                    onApprove();
-                                    removeOverlayAndDispose();
-                                  }
-                                : null,
-                            child: const Text("Select this organization"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                          ))),
                 ),
               ],
             ),
@@ -283,9 +320,8 @@ class DonorPage extends StatelessWidget {
   }
 
   Widget _buildDetailBox(String title, String detail) {
-    return SizedBox(
-      width: 200, // Set a fixed width for each detail box
-      height: 100, // Set a fixed height for each detail box
+    return Container(
+      width: 220, // Set a fixed width for each detail box
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -301,6 +337,7 @@ class DonorPage extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               title,
