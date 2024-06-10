@@ -71,16 +71,8 @@ class _OrganizationPageState extends State<OrganizationPage> {
                 itemCount: donations.length,
                 itemBuilder: (context, index) {
                   Donation donation = donations[index];
-                  Donor? donor = donors.firstWhere(
-                      (donor) => donor.userId == donation.donorId,
-                      orElse: () => Donor(
-                          userId: null,
-                          id: null,
-                          name: 'Unknown',
-                          username: 'Unknown',
-                          password: 'Unknown',
-                          addresses: [],
-                          contactNo: 'Unknown'));
+                  Donor? donor = donors
+                      .firstWhere((donor) => donor.userId == donation.donorId);
 
                   return DonationCard(
                       donor: donor,
