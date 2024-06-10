@@ -134,11 +134,12 @@ class DonorPage extends StatelessWidget {
         children: <Widget>[
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Color.fromRGBO(48, 61, 78, 1),
             ),
             child: Text(
               'Menu',
               style: TextStyle(
+                fontWeight: FontWeight.bold,
                 color: Colors.white,
                 fontSize: 24,
               ),
